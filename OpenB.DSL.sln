@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenB.DSL", "OpenB.DSL\OpenB.DSL.csproj", "{4BB10789-BE85-431E-A589-E5E80F4B8176}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenB.DSL.Test", "OpenB.DSL.Test\OpenB.DSL.Test.csproj", "{0ED09866-D8AA-4C06-8B3F-25E81FE54132}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4BB10789-BE85-431E-A589-E5E80F4B8176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BB10789-BE85-431E-A589-E5E80F4B8176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BB10789-BE85-431E-A589-E5E80F4B8176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BB10789-BE85-431E-A589-E5E80F4B8176}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ED09866-D8AA-4C06-8B3F-25E81FE54132}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ED09866-D8AA-4C06-8B3F-25E81FE54132}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ED09866-D8AA-4C06-8B3F-25E81FE54132}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ED09866-D8AA-4C06-8B3F-25E81FE54132}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
