@@ -57,5 +57,31 @@ namespace OpenB.DSL.Test
 
             Assert.That(result.Equals(true));
         }
+
+        [Test]
+        public void EvaluateCustomFunction_InExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "SQRT(144) = 12";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void EvaluateCustomFunction_LogicalOperatorInExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "12 or 4 = 4";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
     }
 }

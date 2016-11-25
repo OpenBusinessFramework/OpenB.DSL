@@ -9,9 +9,10 @@ namespace OpenB.DSL
 
         public TokenEvaluator(CultureInfo cultureInfo)
         {
-            this.cultureInfo = cultureInfo;
             if (cultureInfo == null)
                 throw new ArgumentNullException(nameof(cultureInfo));
+
+            this.cultureInfo = cultureInfo;
         }
 
         internal object Evaluate(Token token)

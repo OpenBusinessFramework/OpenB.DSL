@@ -31,7 +31,7 @@ namespace OpenB.DSL
         {
             return new ExpressionParser(
                     new CoreConfiguration(),
-                    new ExpressionFactory(new SymbolFactory()),
+                    new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration())),
                     new TokenEvaluator(CultureInfo.InvariantCulture));
         }
 
@@ -162,6 +162,9 @@ namespace OpenB.DSL
                     case "EQUALITY_COMPARER":
                         HandleEqualityComparer(outputQueue, argumentStack, currentToken);
                         break;
+                    case "SYMBOL":
+                        HandleSymbol(outputQueue, argumentStack, currentToken);
+                        break;
 
                     default:
                         CreateArgument(outputQueue, argumentStack, currentToken);                        
@@ -172,6 +175,21 @@ namespace OpenB.DSL
             return (bool)argumentStack.Pop();
 
             throw new NotSupportedException();
+        }
+
+        private void HandleSymbol(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        {
+            List<object> arguments = new List<object>();
+            
+            while (argumentStack.Count > 0)
+            {
+                arguments.Add(argumentStack.Pop());
+            }
+
+           var expression = expressionFactory.GetSymbolicExpression(currentToken.Contents, arguments);
+           
+            argumentStack.Push(expression.Evaluate());
+            outputQueue.Dequeue();
         }
 
         private void HandleOperator(Queue outputQueue, Stack<object> argumentStack, Token currentToken)

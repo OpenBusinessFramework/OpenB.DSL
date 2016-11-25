@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using OpenB.DSL;
 using OpenB.DSL.Expressions.Math;
+using OpenB.DSL.Functions;
+using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
 {
@@ -11,14 +13,17 @@ namespace OpenB.DSL
     public class ExpressionFactory
     {
         readonly SymbolFactory symbolFactory;
+        readonly TypeLoaderService typeLoaderService;
 
-        public ExpressionFactory(SymbolFactory symbolFactory)
+        public ExpressionFactory(SymbolFactory symbolFactory, TypeLoaderService typeLoaderService)
         {
-            this.symbolFactory = symbolFactory;
+            if (typeLoaderService == null)
+                throw new ArgumentNullException(nameof(typeLoaderService));
             if (symbolFactory == null)
                 throw new ArgumentNullException(nameof(symbolFactory));
 
-
+            this.typeLoaderService = typeLoaderService;
+            this.symbolFactory = symbolFactory;
         }
 
         internal IExpression GetExpression(object left, object right, string contents)
@@ -43,8 +48,28 @@ namespace OpenB.DSL
             }
             throw new NotSupportedException();
         }
+
+        internal IParserFunction GetSymbolicExpression(string name, List<object> arguments)
+        {
+
+            var functions = typeLoaderService.GetTypesImplementing(new[] { typeof(IParserFunction) });
+
+            foreach (Type type in functions)
+            {
+                ParserFunctionAttribute attribute = type.GetCustomAttributes(typeof(ParserFunctionAttribute), true).Single() as ParserFunctionAttribute;
+                if (attribute.Name == name)
+                {
+                    IParserFunction symbol = (IParserFunction)Activator.CreateInstance(type, arguments.ToArray());
+                    return symbol;
+                }
+            }
+
+            throw new NotSupportedException($"Function {name} is not available");
+
+        }
     }
 }
+
 
 public interface IEQualityExpression : IExpression
 {
