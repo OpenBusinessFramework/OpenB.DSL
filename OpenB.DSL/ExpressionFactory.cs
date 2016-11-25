@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using OpenB.DSL;
+using OpenB.DSL.Expressions.Math;
 
 namespace OpenB.DSL
 {
@@ -16,39 +18,34 @@ namespace OpenB.DSL
             if (symbolFactory == null)
                 throw new ArgumentNullException(nameof(symbolFactory));
 
-            
+
         }
 
-        public IExpression CreateExpression(IList<Token> tokens)
+        internal IExpression GetExpression(object left, object right, string contents)
         {
-            var lastToken = tokens.Last();
+            double leftHand = Convert.ToDouble(left);
+            double rightHand = Convert.ToDouble(right);
 
-            if (lastToken.Type.Equals("OPERATOR"))
+            switch (contents)
             {
-                if (lastToken.Contents.Equals("+"))
-                {
-                    double leftHand = double.Parse(tokens[0].Contents, CultureInfo.InvariantCulture);
-                    double rightHand = double.Parse(tokens[1].Contents, CultureInfo.InvariantCulture);
-
+                case "+":
                     return new AdditionExpression(leftHand, rightHand);
-                }
-
-                if (lastToken.Contents.Equals("/"))
-                {
-                    double leftHand = double.Parse(tokens[0].Contents, CultureInfo.InvariantCulture);
-                    double rightHand = double.Parse(tokens[1].Contents, CultureInfo.InvariantCulture);
-
+                case "-":
+                    return new SubstractionExpression(leftHand, rightHand);
+                case "*":
+                    return new MultiplyExpression(leftHand, rightHand);
+                case "/":
                     return new DivisionExpression(leftHand, rightHand);
-                }
-            }
 
-            if (lastToken.Type.Equals("SYMBOL"))
-            {
-                return symbolFactory.GetExpression(lastToken.Contents, tokens.Except(new List<Token> { tokens.Last() }));
-            }
+                case "=":
+                    return new EqualExpression(leftHand, rightHand);
 
-            throw new NotSupportedException("Cannot create expression");
+            }
+            throw new NotSupportedException();
         }
     }
-    
+}
+
+public interface IEQualityExpression : IExpression
+{
 }

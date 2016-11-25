@@ -41,10 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreConfiguration.cs" />
-    <Compile Include="Expressions\DivisionExpression.cs" />
+    <Compile Include="EqualExpression.cs" />
+    <Compile Include="Expressions\Math\AdditionExpression.cs" />
+    <Compile Include="Expressions\Math\DivisionExpression.cs" />
     <Compile Include="ExpressionFactory.cs" />
     <Compile Include="ExpressionParser.cs" />
     <Compile Include="Expressions\IExpression.cs" />
+    <Compile Include="Expressions\Math\MultiplyExpression.cs" />
+    <Compile Include="Expressions\Math\SubstractionExpression.cs" />
     <Compile Include="IMatcher.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +57,7 @@
     <Compile Include="SymbolFactory.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TokenDefinition.cs" />
+    <Compile Include="TokenEvaluator.cs" />
     <Compile Include="Tokenizer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

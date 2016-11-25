@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace OpenB.DSL
@@ -9,24 +10,32 @@ namespace OpenB.DSL
     {
         private CoreConfiguration coreConfiguration;
         private ExpressionFactory expressionFactory;
+        readonly TokenEvaluator tokenEvaluator;
 
-        private ExpressionParser(CoreConfiguration configuration, ExpressionFactory expressionFactory)
+        private ExpressionParser(CoreConfiguration configuration, ExpressionFactory expressionFactory, TokenEvaluator tokenEvaluator)
         {
-            this.expressionFactory = expressionFactory;
+            if (tokenEvaluator == null)
+                throw new ArgumentNullException(nameof(tokenEvaluator));
+
             if (expressionFactory == null)
                 throw new ArgumentNullException(nameof(expressionFactory));
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
+            this.expressionFactory = expressionFactory;
             this.coreConfiguration = configuration;
+            this.tokenEvaluator = tokenEvaluator;
         }
 
         public static ExpressionParser GetInstance()
         {
-            return new ExpressionParser(new CoreConfiguration(), new ExpressionFactory(new SymbolFactory()));
+            return new ExpressionParser(
+                    new CoreConfiguration(),
+                    new ExpressionFactory(new SymbolFactory()),
+                    new TokenEvaluator(CultureInfo.InvariantCulture));
         }
 
-        public void Parse(string expresion)
+        public Queue Parse(string expresion)
         {
             Tokenizer tokenizer = new Tokenizer(coreConfiguration.TokenDefinitions);
             var tokens = tokenizer.Tokenize(expresion);
@@ -47,7 +56,7 @@ namespace OpenB.DSL
                     outputQueue.Enqueue(token);
                 }
 
-                if (token.Type.Equals("OPERATOR"))
+                if (token.Type.Equals("OPERATOR") || token.Type.Equals("EQUALITY_COMPARER"))
                 {
                     // If the token is an operator, o1, then:
                     // while there is an operator token o2, at the top of the operator stack and either
@@ -63,7 +72,7 @@ namespace OpenB.DSL
                         int currentOperatorIndex = coreConfiguration.OperatorPrecedance.IndexOf(token.Contents[0]);
                         int lastOperatorIndex = coreConfiguration.OperatorPrecedance.IndexOf(lastOperatorToken.Contents[0]);
 
-                        if (currentOperatorIndex < lastOperatorIndex)
+                        if (currentOperatorIndex >= lastOperatorIndex)
                         {
                             outputQueue.Enqueue(operatorStack.Pop());
                         }
@@ -94,8 +103,8 @@ namespace OpenB.DSL
                     {
                         outputQueue.Enqueue(operatorStack.Pop());
                     }
-
                     operatorStack.Pop();
+
 
                     if (((Token)operatorStack.Peek()).Type.Equals("SYMBOL"))
                     {
@@ -118,16 +127,11 @@ namespace OpenB.DSL
                     // TODO: Expression excepition if no ( is found.
                 }
 
-                if (token.Type.Equals("EQUALITY_COMPARER"))
-                {                    
-                    expressionStack.Push(outputQueue);
-                    outputQueue = new Queue();
-                }
             }
 
             while (operatorStack.Count > 0)
             {
-                outputQueue.Enqueue(operatorStack.Pop());               
+                outputQueue.Enqueue(operatorStack.Pop());
             }
 
             if (outputQueue.Count > 0)
@@ -136,16 +140,67 @@ namespace OpenB.DSL
             }
 
 
-            ProcessOutput(outputQueue);
+            return outputQueue;
         }
 
-        private void ProcessOutput(Queue outputQueue)
+        public bool Evaluate(Queue outputQueue)
         {
             if (outputQueue == null)
                 throw new ArgumentNullException(nameof(outputQueue));
 
-            IList<Token> tokenList = new List<Token>();
+            Stack<object> argumentStack = new Stack<object>();
 
+            while (outputQueue.Count > 0)
+            {
+                Token currentToken = (Token)outputQueue.Peek();
+                switch (currentToken.Type)
+                {
+                    case "OPERATOR":
+                        HandleOperator(outputQueue, argumentStack, currentToken);
+                        break;
+
+                    case "EQUALITY_COMPARER":
+                        HandleEqualityComparer(outputQueue, argumentStack, currentToken);
+                        break;
+
+                    default:
+                        CreateArgument(outputQueue, argumentStack, currentToken);                        
+                        break;
+                }
+            }
+
+            return (bool)argumentStack.Pop();
+
+            throw new NotSupportedException();
+        }
+
+        private void HandleOperator(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        {
+            object rightHand = argumentStack.Pop();
+            object leftHand = argumentStack.Pop();
+            IExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
+            argumentStack.Push(expression.Evaluate());
+
+            outputQueue.Dequeue();
+        }
+
+        private void HandleEqualityComparer(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        {
+            object rightHand = argumentStack.Pop();
+            object leftHand = argumentStack.Pop();
+            IExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
+            argumentStack.Push(expression.Evaluate());
+
+            outputQueue.Dequeue();
+        }
+
+        private void CreateArgument(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        {
+            object tokenValue = tokenEvaluator.Evaluate(currentToken);
+
+            argumentStack.Push(tokenValue);
+
+            outputQueue.Dequeue();
         }
     }
 }

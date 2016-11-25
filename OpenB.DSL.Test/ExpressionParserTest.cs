@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections;
+using NUnit.Framework;
 
 namespace OpenB.DSL.Test
 {
@@ -6,13 +7,55 @@ namespace OpenB.DSL.Test
     public class ExpressionParserTest
     {
         [Test]
-        public void DoSomething()
+        public void MathExpression_NotEquals_MathExpression()
         {
             ExpressionParser parser = ExpressionParser.GetInstance();
 
-            string expression = "sin ( max ( 2, 3 ) / 3 * 3.1415 ) = (20 + sjakie(1,2,3) * 4)";
+            string expression = "4 * 3 / 2 = (12 / 3) + 2";
 
-            parser.Parse(expression);
+            Queue queue =  parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void MathExpression_Equals_ConstantExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "4 * 3 = 12";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void MultiMathExpression_Equals_ConstantExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "4 * 3 - 2 = 12 * (6 - 3) - 26";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void ConstantExpression_Equals_ConstantExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "12 = 12";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
         }
     }
 }

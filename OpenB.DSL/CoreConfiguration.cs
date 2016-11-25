@@ -14,15 +14,18 @@ namespace OpenB.DSL
 
         public CoreConfiguration()
         {
-            TokenDefinitions = new [] {
+            TokenDefinitions = new[] {
             new TokenDefinition(@"\[[A-Za-z]+(\.{0,1}[A-Za-z]+){0,}\]", "FIELD"),
             new TokenDefinition(@"([""'])(?:\\\1|.)*?\1", "QUOTED_STRING"),
             new TokenDefinition(@"\(", "SUB_EXPR_START"),
             new TokenDefinition(@"\)", "SUB_EXPR_END"),
-            new TokenDefinition(@"[\+|\-|\*|/]{1}", "OPERATOR"),
-            new TokenDefinition(@"[*<>\?\-+/A-Za-z->!]+", "SYMBOL"),
+
             new TokenDefinition(@"[-+]?\d*\.\d+([eE][-+]?\d+)?", "FLOAT"),
             new TokenDefinition(@"[-+]?\d+", "INT"),
+            new TokenDefinition(@"[\+|\-|\*|/]{1}", "OPERATOR"),
+            new TokenDefinition(@"and", "LOGICAL_OPERATOR"),
+            new TokenDefinition(@"or", "LOGICAL_OPERATOR"),
+            new TokenDefinition(@"[*<>\?\-+/A-Za-z->!]+", "SYMBOL"),
             new TokenDefinition(@"\.", "DOT"),
             new TokenDefinition(@"\s", "SPACE"),
             new TokenDefinition(@"\>", "EQUALITY_COMPARER"),
@@ -31,17 +34,16 @@ namespace OpenB.DSL
             new TokenDefinition(@"\!", "EQUALITY_COMPARER"),
             new TokenDefinition(@"true", "TRUE"),
             new TokenDefinition(@"false", "FALSE"),
-            new TokenDefinition(@"and", "LOG_AND"),
-            new TokenDefinition(@"or", "LOG_OR"),
-            new TokenDefinition(@",", "SEPARATOR"),
            
+            new TokenDefinition(@",", "SEPARATOR"),
+
             };
 
             IgnoreWhiteSpace = true;
 
             // TODO: Rooting
-            OperatorPrecedance = $"^*/+-";
-    }
+            OperatorPrecedance = $"^*/+-=()";
+        }
 
     }
 }
