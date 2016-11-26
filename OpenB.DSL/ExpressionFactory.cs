@@ -26,8 +26,25 @@ namespace OpenB.DSL
             this.symbolFactory = symbolFactory;
         }
 
-        internal IExpression GetExpression(object left, object right, string contents)
+        internal IEQualityExpression GetExpression(object left, object right, string contents)
         {
+            if (left is string || right is string)
+            {
+                if (contents == "=")
+                {
+                    return new StringComparisionIsEqualExpression(left.ToString(), right.ToString());
+                }
+
+                if (contents == "!=")
+                {
+                    return new StringComparisionNotEqualExpression(left.ToString(), right.ToString());
+                }
+
+                throw new NotSupportedException($"Equality operator {contents} is not supported for arguments {left} and {right}.");
+                  
+            }
+
+            // TODO: Type checking for left and right.
             double leftHand = Convert.ToDouble(left);
             double rightHand = Convert.ToDouble(right);
 
@@ -44,14 +61,19 @@ namespace OpenB.DSL
 
                 case "=":
                     return new EqualExpression(leftHand, rightHand);
+                case "<":
+                    return new LessThanExpression(leftHand, rightHand);
+                case ">":
+                    return new MoreThanExpression(leftHand, rightHand);
+                case "!=":
+                    return new NotEqualExpression(leftHand, rightHand);
 
             }
             throw new NotSupportedException();
         }
 
-        internal IParserFunction GetSymbolicExpression(string name, List<object> arguments)
+        internal Type GetSymbolicExpression(string name)
         {
-
             var functions = typeLoaderService.GetTypesImplementing(new[] { typeof(IParserFunction) });
 
             foreach (Type type in functions)
@@ -59,18 +81,33 @@ namespace OpenB.DSL
                 ParserFunctionAttribute attribute = type.GetCustomAttributes(typeof(ParserFunctionAttribute), true).Single() as ParserFunctionAttribute;
                 if (attribute.Name == name)
                 {
-                    IParserFunction symbol = (IParserFunction)Activator.CreateInstance(type, arguments.ToArray());
-                    return symbol;
+                    return type;
                 }
             }
 
             throw new NotSupportedException($"Function {name} is not available");
 
         }
+
+        internal IEQualityExpression GetLogicalExpression(object leftHand, object rightHand, string contents)
+        {
+            bool leftHandBoolean = (bool)leftHand;
+            bool rightHandBoolean = (bool)rightHand;
+
+            switch (contents)
+            {
+                case "and":
+                    return new LogicalAndExpression(leftHandBoolean, rightHandBoolean);
+                case "or":
+                    return new LogicalOrExpression(leftHandBoolean, rightHandBoolean);
+            }
+
+            throw new NotSupportedException($"Logical operator {contents} is not supported.");
+        }
     }
 }
 
 
-public interface IEQualityExpression : IExpression
+public interface IEQualityExpression : OpenB.DSL.IEQualityExpression
 {
 }

@@ -1,6 +1,6 @@
 ﻿namespace OpenB.DSL.Expressions.Math
 {
-    internal class DivisionExpression : IExpression
+    internal class DivisionExpression : IEQualityExpression
     {
         private double leftHand;
         private double rightHand;

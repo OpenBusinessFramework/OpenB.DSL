@@ -1,6 +1,6 @@
 ﻿namespace OpenB.DSL
 {
-    public interface IExpression
+    public interface IEQualityExpression
     {
         object Evaluate();
     }

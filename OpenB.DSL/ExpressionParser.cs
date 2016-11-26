@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
 {
@@ -32,7 +34,7 @@ namespace OpenB.DSL
             return new ExpressionParser(
                     new CoreConfiguration(),
                     new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration())),
-                    new TokenEvaluator(CultureInfo.InvariantCulture));
+                    new TokenEvaluator(CultureInfo.InvariantCulture, new ModelEvaluator()));
         }
 
         public Queue Parse(string expresion)
@@ -51,12 +53,12 @@ namespace OpenB.DSL
 
             foreach (Token token in tokens)
             {
-                if (token.Type.Equals("INT") || token.Type.Equals("FLOAT"))
+                if (token.Type.Equals("INT") || token.Type.Equals("FLOAT") || token.Type.Equals("FIELD") || token.Type.Equals("QUOTED_STRING"))
                 {
                     outputQueue.Enqueue(token);
                 }
 
-                if (token.Type.Equals("OPERATOR") || token.Type.Equals("EQUALITY_COMPARER"))
+                if (token.Type.Equals("OPERATOR") || token.Type.Equals("EQUALITY_COMPARER") || token.Type.Equals("LOGICAL_OPERATOR"))
                 {
                     // If the token is an operator, o1, then:
                     // while there is an operator token o2, at the top of the operator stack and either
@@ -69,8 +71,8 @@ namespace OpenB.DSL
                     {
                         Token lastOperatorToken = (Token)operatorStack.Peek();
 
-                        int currentOperatorIndex = coreConfiguration.OperatorPrecedance.IndexOf(token.Contents[0]);
-                        int lastOperatorIndex = coreConfiguration.OperatorPrecedance.IndexOf(lastOperatorToken.Contents[0]);
+                        int currentOperatorIndex = coreConfiguration.OperatorPrecedance.Where(op => op.Operator.Equals(token.Contents)).Single().Precedance;
+                        int lastOperatorIndex = coreConfiguration.OperatorPrecedance.Where(op => op.Operator.Equals(lastOperatorToken.Contents)).Single().Precedance;
 
                         if (currentOperatorIndex >= lastOperatorIndex)
                         {
@@ -105,8 +107,7 @@ namespace OpenB.DSL
                     }
                     operatorStack.Pop();
 
-
-                    if (((Token)operatorStack.Peek()).Type.Equals("SYMBOL"))
+                    if (operatorStack.Count > 0 && ((Token)operatorStack.Peek()).Type.Equals("SYMBOL"))
                     {
                         outputQueue.Enqueue(operatorStack.Pop());
                     }
@@ -126,7 +127,6 @@ namespace OpenB.DSL
 
                     // TODO: Expression excepition if no ( is found.
                 }
-
             }
 
             while (operatorStack.Count > 0)
@@ -162,12 +162,17 @@ namespace OpenB.DSL
                     case "EQUALITY_COMPARER":
                         HandleEqualityComparer(outputQueue, argumentStack, currentToken);
                         break;
+
                     case "SYMBOL":
                         HandleSymbol(outputQueue, argumentStack, currentToken);
                         break;
 
+                    case "LOGICAL_OPERATOR":
+                        HandleLogicalOperation(outputQueue, argumentStack, currentToken);
+                        break;
+
                     default:
-                        CreateArgument(outputQueue, argumentStack, currentToken);                        
+                        CreateArgument(outputQueue, argumentStack, currentToken);
                         break;
                 }
             }
@@ -177,17 +182,30 @@ namespace OpenB.DSL
             throw new NotSupportedException();
         }
 
-        private void HandleSymbol(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private void HandleLogicalOperation(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
         {
+            object rightHand = argumentStack.Pop();
+            object leftHand = argumentStack.Pop();
+            IEQualityExpression expression = expressionFactory.GetLogicalExpression(leftHand, rightHand, currentToken.Contents);
+            argumentStack.Push(expression.Evaluate());
+
+            outputQueue.Dequeue();
+        }
+
+        private void HandleSymbol(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        {   
+            Type expressionType = expressionFactory.GetSymbolicExpression(currentToken.Contents);
+            ConstructorInfo constructor = expressionType.GetConstructors().FirstOrDefault();
+
             List<object> arguments = new List<object>();
-            
-            while (argumentStack.Count > 0)
+
+            for (int x= 0; x < constructor.GetParameters().Length; x++)
             {
                 arguments.Add(argumentStack.Pop());
             }
 
-           var expression = expressionFactory.GetSymbolicExpression(currentToken.Contents, arguments);
-           
+            IEQualityExpression expression = (IEQualityExpression)Activator.CreateInstance(expressionType, arguments.ToArray());            
+
             argumentStack.Push(expression.Evaluate());
             outputQueue.Dequeue();
         }
@@ -196,7 +214,7 @@ namespace OpenB.DSL
         {
             object rightHand = argumentStack.Pop();
             object leftHand = argumentStack.Pop();
-            IExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
+            IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
             argumentStack.Push(expression.Evaluate());
 
             outputQueue.Dequeue();
@@ -206,7 +224,7 @@ namespace OpenB.DSL
         {
             object rightHand = argumentStack.Pop();
             object leftHand = argumentStack.Pop();
-            IExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
+            IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
             argumentStack.Push(expression.Evaluate());
 
             outputQueue.Dequeue();

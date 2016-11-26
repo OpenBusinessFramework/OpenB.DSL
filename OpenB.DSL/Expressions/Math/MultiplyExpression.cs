@@ -1,7 +1,7 @@
 ﻿namespace OpenB.DSL.Expressions.Math
 {
 
-    internal class MultiplyExpression : IExpression
+    internal class MultiplyExpression : IEQualityExpression
     {
         private double leftHand;
         private double rightHand;

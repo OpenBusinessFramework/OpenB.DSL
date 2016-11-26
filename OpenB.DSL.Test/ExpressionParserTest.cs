@@ -7,13 +7,52 @@ namespace OpenB.DSL.Test
     public class ExpressionParserTest
     {
         [Test]
-        public void MathExpression_NotEquals_MathExpression()
+        public void MathExpression_MoreThan_MathExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "8 * 3 / 2 > (12 / 3) + 2";
+
+            Queue queue =  parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void MathExpression_LessThan_MathExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "8 * 3 / 2 < (12 / 3) + 2";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(false));
+        }
+
+        [Test]
+        public void MathExpression_NotEqual_MathExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "8 * 3 / 2 != (12 / 3) + 2";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void MathExpression_Equals_MathExpression()
         {
             ExpressionParser parser = ExpressionParser.GetInstance();
 
             string expression = "4 * 3 / 2 = (12 / 3) + 2";
 
-            Queue queue =  parser.Parse(expression);
+            Queue queue = parser.Parse(expression);
             bool result = parser.Evaluate(queue);
 
             Assert.That(result.Equals(true));
@@ -72,11 +111,89 @@ namespace OpenB.DSL.Test
         }
 
         [Test]
-        public void EvaluateCustomFunction_LogicalOperatorInExpression()
+        public void EvaluateComplexCustomFunction_InExpression()
         {
             ExpressionParser parser = ExpressionParser.GetInstance();
 
-            string expression = "12 or 4 = 4";
+            string expression = "(12 + 3) / SQRT(15 * 15) = 1";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void EvaluateCustomFunction_LogicalOperatorInExpression_And()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "(12 + 3 = 15) and (4 + 12 = 16)";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void EvaluateCustomFunction_LogicalOperatorInExpression_Or()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "(12 + 3 = 15) or (4 + 12 = 10)";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void EvaluateCustomFunction_ComplexLogicalOperatorInExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "(12 + 3 = 15) and ((12 + 3 = 15) or (13 + 2 = 10))";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void EvaluateCustomFunction_FieldInExpression()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "100 / SQRT([Age]) = 2";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void Evaluate_StringComparisation_ReturnsTrue()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "'John Doe' = 'John Doe'";
+
+            Queue queue = parser.Parse(expression);
+            bool result = parser.Evaluate(queue);
+
+            Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void Evaluate_StringComparisation_ReturnsFalse()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "'Jane Doe' != 'John Doe'";
 
             Queue queue = parser.Parse(expression);
             bool result = parser.Evaluate(queue);

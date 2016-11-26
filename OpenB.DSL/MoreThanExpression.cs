@@ -1,12 +1,13 @@
-﻿namespace OpenB.DSL.Expressions.Math
-{
+﻿using System;
 
-    internal class AdditionExpression : IEQualityExpression
+namespace OpenB.DSL
+{
+    internal class MoreThanExpression : IEQualityExpression
     {
         private double leftHand;
         private double rightHand;
 
-        public AdditionExpression(double leftHand, double rightHand)
+        public MoreThanExpression(double leftHand, double rightHand)
         {
             this.leftHand = leftHand;
             this.rightHand = rightHand;
@@ -14,7 +15,7 @@
 
         public object Evaluate()
         {
-            return leftHand + rightHand;
+            return leftHand > rightHand;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace OpenB.DSL
 {
-    internal class SymbolExpression : IExpression
+    internal class SymbolExpression : IEQualityExpression
     {
         public object Evaluate()
         {

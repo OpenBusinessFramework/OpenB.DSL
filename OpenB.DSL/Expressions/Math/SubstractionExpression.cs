@@ -1,7 +1,7 @@
 ﻿namespace OpenB.DSL.Expressions.Math
 {
 
-    internal class SubstractionExpression : IExpression
+    internal class SubstractionExpression : IEQualityExpression
     {
         private double leftHand;
         private double rightHand;

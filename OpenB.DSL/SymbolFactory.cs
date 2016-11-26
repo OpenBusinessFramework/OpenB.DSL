@@ -5,7 +5,7 @@ namespace OpenB.DSL
 {
     public class SymbolFactory
     {
-        internal IExpression GetExpression(string keyword, IEnumerable<Token> parameters)
+        internal IEQualityExpression GetExpression(string keyword, IEnumerable<Token> parameters)
         {
             return new SymbolExpression();
         }

@@ -1,8 +1,8 @@
 ﻿namespace OpenB.DSL.Functions
 {
 
-    public interface IParserFunction : IExpression
+    public interface IParserFunction : IEQualityExpression
     {
-        object Evaluate();
+
     }
 }
