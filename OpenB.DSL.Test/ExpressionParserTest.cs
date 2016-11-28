@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 
 namespace OpenB.DSL.Test
@@ -199,6 +200,19 @@ namespace OpenB.DSL.Test
             bool result = parser.Evaluate(queue);
 
             Assert.That(result.Equals(true));
+        }
+
+        [Test]
+        public void Evaluate_StringComparisation_ThrowsException()
+        {
+            ExpressionParser parser = ExpressionParser.GetInstance();
+
+            string expression = "'Jane Doe' > 'John Doe'";
+
+            Queue queue = parser.Parse(expression);
+            
+
+            Assert.Throws<NotSupportedException>(() => parser.Evaluate(queue));
         }
     }
 }
