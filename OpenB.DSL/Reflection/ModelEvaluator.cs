@@ -1,15 +1,35 @@
-﻿namespace OpenB.DSL.Reflection
+﻿using System.Reflection;
+
+namespace OpenB.DSL.Reflection
 {
     public class ModelEvaluator
     {
-        public ModelEvaluator()
-        {
+        readonly object context;
 
+        public ModelEvaluator(object context)
+        {
+            this.context = context;
         }
 
         public object Evaluate(string path)
         {
-            return 2500;
+            string[] splittedPath = path.Split('.');
+            object currentObject = context;
+            object returnValue = null;
+
+            for (int x = 0; x < splittedPath.Length; x++)
+            {
+                PropertyInfo relevantProperty = currentObject.GetType().GetProperty(splittedPath[x]);
+                if (relevantProperty == null)
+                {
+                    throw new System.Exception($"Property {splittedPath[x]} does not exist.");
+                }
+
+                returnValue = relevantProperty.GetValue(context);
+            }
+
+            return returnValue;
+           
         }
     }   
 }

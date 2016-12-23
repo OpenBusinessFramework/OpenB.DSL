@@ -56,8 +56,10 @@
     <Compile Include="Lexer.cs" />
     <Compile Include="Expressions\LogicalAndExpression.cs" />
     <Compile Include="Expressions\LogicalOrExpression.cs" />
+    <Compile Include="Md5Hash.cs" />
     <Compile Include="MoreThanExpression.cs" />
     <Compile Include="NotEqualExpression.cs" />
+    <Compile Include="ParserResult.cs" />
     <Compile Include="Reflection\ModelEvaluator.cs" />
     <Compile Include="ParserFunctionAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -81,7 +83,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)\.nuget\nuget pack $(ProjectPath) -Properties Configuration=$(ConfigurationName) -IncludeReferencedProjects</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

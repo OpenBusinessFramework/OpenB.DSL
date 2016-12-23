@@ -11,7 +11,7 @@ namespace OpenB.DSL
         public int Precedance { get; private set; }
         public string Operator { get; private set; }
 
-       
+
 
         public OperatorItem(int precedance, string operatorString)
         {
@@ -24,7 +24,7 @@ namespace OpenB.DSL
     {
         public bool IgnoreWhiteSpace { get; private set; }
         public TokenDefinition[] TokenDefinitions { get; private set; }
-        public  List<OperatorItem> OperatorPrecedance { get; private set; }
+        public List<OperatorItem> OperatorPrecedance { get; private set; }
 
         public CoreConfiguration()
         {
@@ -33,22 +33,23 @@ namespace OpenB.DSL
             new TokenDefinition(@"([""'])(?:\\\1|.)*?\1", "QUOTED_STRING"),
             new TokenDefinition(@"\(", "SUB_EXPR_START"),
             new TokenDefinition(@"\)", "SUB_EXPR_END"),
-
             new TokenDefinition(@"[-+]?\d*\.\d+([eE][-+]?\d+)?", "FLOAT"),
             new TokenDefinition(@"[-+]?\d+", "INT"),
+            new TokenDefinition(@"true", "BOOLEAN"),
+            new TokenDefinition(@"false", "BOOLEAN"),
             new TokenDefinition(@"[\+|\-|\*|/]{1}", "OPERATOR"),
             new TokenDefinition(@"and", "LOGICAL_OPERATOR"),
             new TokenDefinition(@"or", "LOGICAL_OPERATOR"),
-             new TokenDefinition(@"\s", "SPACE"),
+            new TokenDefinition(@"\s", "SPACE"),
             new TokenDefinition(@"\>", "EQUALITY_COMPARER"),
             new TokenDefinition(@"\<", "EQUALITY_COMPARER"),
             new TokenDefinition(@"!=", "EQUALITY_COMPARER"),
             new TokenDefinition(@"\=", "EQUALITY_COMPARER"),
+
             new TokenDefinition(@"[*<>\?\-+/A-Za-z->!]+", "SYMBOL"),
-            new TokenDefinition(@"\.", "DOT"),              
-            new TokenDefinition(@"true", "TRUE"),
-            new TokenDefinition(@"false", "FALSE"),
-           
+            new TokenDefinition(@"\.", "DOT"),
+
+
             new TokenDefinition(@",", "SEPARATOR"),
 
             };
@@ -62,17 +63,17 @@ namespace OpenB.DSL
                 new OperatorItem(2, "*"),
                 new OperatorItem(3, "/"),
                 new OperatorItem(4, "+"),
-                new OperatorItem(5, "-"),                
-                new OperatorItem(6, "and"),
-                new OperatorItem(7, "="),
-                new OperatorItem(7, ">"),
-                new OperatorItem(7, "<"),
-                new OperatorItem(7, "!="),
-                new OperatorItem(6, "or"),
+                new OperatorItem(5, "-"),
+                new OperatorItem(7, "and"),
+                new OperatorItem(7, "or"),
+                new OperatorItem(6, "="),
+                new OperatorItem(6, ">"),
+                new OperatorItem(6, "<"),
+                new OperatorItem(6, "!="),
                 new OperatorItem(8, "("),
                 new OperatorItem(8, ")"),
             };
-           
+
         }
 
     }

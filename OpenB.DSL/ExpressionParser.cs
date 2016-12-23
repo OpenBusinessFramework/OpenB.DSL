@@ -8,8 +8,13 @@ using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
 {
-    public class ExpressionParser
+
+    public class ExpressionParser : IParser
     {
+        private static ExpressionParser expressionParser;
+
+        private IDictionary<string, Queue> quequeCache = new Dictionary<string, Queue>();
+
         private CoreConfiguration coreConfiguration;
         private ExpressionFactory expressionFactory;
         readonly TokenEvaluator tokenEvaluator;
@@ -29,15 +34,19 @@ namespace OpenB.DSL
             this.tokenEvaluator = tokenEvaluator;
         }
 
-        public static ExpressionParser GetInstance()
+        public static ExpressionParser GetInstance(object context)
         {
-            return new ExpressionParser(
+            if (expressionParser == null)
+            {
+                expressionParser = new ExpressionParser(
                     new CoreConfiguration(),
                     new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration())),
-                    new TokenEvaluator(CultureInfo.InvariantCulture, new ModelEvaluator()));
+                    new TokenEvaluator(CultureInfo.InvariantCulture, new ModelEvaluator(context)));
+            }
+            return expressionParser;            
         }
 
-        public Queue Parse(string expresion)
+        internal Queue ParseInternal(string expresion)
         {
             Tokenizer tokenizer = new Tokenizer(coreConfiguration.TokenDefinitions);
             var tokens = tokenizer.Tokenize(expresion);
@@ -53,7 +62,8 @@ namespace OpenB.DSL
 
             foreach (Token token in tokens)
             {
-                if (token.Type.Equals("INT") || token.Type.Equals("FLOAT") || token.Type.Equals("FIELD") || token.Type.Equals("QUOTED_STRING"))
+                // Try to get values from tokens.
+                if (token.Type.Equals("INT") || token.Type.Equals("FLOAT") || token.Type.Equals("FIELD") || token.Type.Equals("QUOTED_STRING") || token.Type.Equals("BOOLEAN"))
                 {
                     outputQueue.Enqueue(token);
                 }
@@ -143,12 +153,26 @@ namespace OpenB.DSL
             return outputQueue;
         }
 
-        public bool Evaluate(Queue outputQueue)
+        public ParserResult Parse(string expression)
         {
+            Queue outputQueue;
+            if (quequeCache.ContainsKey(expression))
+            {
+                outputQueue = quequeCache[expression];
+            }
+            else
+            {
+                outputQueue = ParseInternal(expression);
+                Queue newQueue = (Queue)outputQueue.Clone();
+
+                quequeCache.Add(expression, newQueue);
+            }            
+    
             if (outputQueue == null)
                 throw new ArgumentNullException(nameof(outputQueue));
 
             Stack<object> argumentStack = new Stack<object>();
+            Stack<IExpression> expressionStack = new Stack<IExpression>();
 
             while (outputQueue.Count > 0)
             {
@@ -156,19 +180,20 @@ namespace OpenB.DSL
                 switch (currentToken.Type)
                 {
                     case "OPERATOR":
-                        HandleOperator(outputQueue, argumentStack, currentToken);
+                        expressionStack.Push(HandleOperator(outputQueue, argumentStack, currentToken));
                         break;
 
                     case "EQUALITY_COMPARER":
-                        HandleEqualityComparer(outputQueue, argumentStack, currentToken);
+                        expressionStack.Push(HandleEqualityComparer(outputQueue, argumentStack, currentToken));
                         break;
 
                     case "SYMBOL":
-                        HandleSymbol(outputQueue, argumentStack, currentToken);
+                        expressionStack.Push(HandleSymbol(outputQueue, argumentStack, currentToken));
+                       
                         break;
 
                     case "LOGICAL_OPERATOR":
-                        HandleLogicalOperation(outputQueue, argumentStack, currentToken);
+                        expressionStack.Push(HandleLogicalOperation(outputQueue, argumentStack, currentToken));
                         break;
 
                     default:
@@ -176,13 +201,10 @@ namespace OpenB.DSL
                         break;
                 }
             }
-
-            return (bool)argumentStack.Pop();
-
-            throw new NotSupportedException();
+            return new ParserResult((bool)argumentStack.Pop());
         }
 
-        private void HandleLogicalOperation(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private IExpression HandleLogicalOperation(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
         {
             object rightHand = argumentStack.Pop();
             object leftHand = argumentStack.Pop();
@@ -190,27 +212,31 @@ namespace OpenB.DSL
             argumentStack.Push(expression.Evaluate());
 
             outputQueue.Dequeue();
+
+            return expression;
         }
 
-        private void HandleSymbol(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
-        {   
+        private IExpression HandleSymbol(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        {
             Type expressionType = expressionFactory.GetSymbolicExpression(currentToken.Contents);
             ConstructorInfo constructor = expressionType.GetConstructors().FirstOrDefault();
 
             List<object> arguments = new List<object>();
 
-            for (int x= 0; x < constructor.GetParameters().Length; x++)
+            for (int x = 0; x < constructor.GetParameters().Length; x++)
             {
                 arguments.Add(argumentStack.Pop());
             }
 
-            IEQualityExpression expression = (IEQualityExpression)Activator.CreateInstance(expressionType, arguments.ToArray());            
+            IEQualityExpression expression = (IEQualityExpression)Activator.CreateInstance(expressionType, arguments.ToArray());
 
             argumentStack.Push(expression.Evaluate());
             outputQueue.Dequeue();
+
+            return (expression);
         }
 
-        private void HandleOperator(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private IExpression HandleOperator(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
         {
             object rightHand = argumentStack.Pop();
             object leftHand = argumentStack.Pop();
@@ -218,9 +244,11 @@ namespace OpenB.DSL
             argumentStack.Push(expression.Evaluate());
 
             outputQueue.Dequeue();
+
+            return (expression);
         }
 
-        private void HandleEqualityComparer(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private IExpression HandleEqualityComparer(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
         {
             object rightHand = argumentStack.Pop();
             object leftHand = argumentStack.Pop();
@@ -228,15 +256,39 @@ namespace OpenB.DSL
             argumentStack.Push(expression.Evaluate());
 
             outputQueue.Dequeue();
+
+            return (expression);
         }
 
-        private void CreateArgument(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private IExpression CreateArgument(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
         {
             object tokenValue = tokenEvaluator.Evaluate(currentToken);
 
             argumentStack.Push(tokenValue);
 
             outputQueue.Dequeue();
+
+            return new ArgumentExpression(tokenValue);
         }
+    }
+
+    internal class ArgumentExpression : IExpression
+    {
+        private object tokenValue;
+
+        public ArgumentExpression(object tokenValue)
+        {
+            this.tokenValue = tokenValue;
+        }
+
+        public object Evaluate()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public interface IParser
+    {
+        ParserResult Parse(string expression);
     }
 }

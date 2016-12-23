@@ -10,12 +10,14 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_MoreThan_MathExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "8 * 3 / 2 > (12 / 3) + 2";
 
-            Queue queue =  parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -23,12 +25,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_LessThan_MathExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "8 * 3 / 2 < (12 / 3) + 2";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(false));
         }
@@ -36,12 +39,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_NotEqual_MathExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "8 * 3 / 2 != (12 / 3) + 2";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -49,12 +53,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_Equals_MathExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "4 * 3 / 2 = (12 / 3) + 2";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -62,12 +67,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_Equals_ConstantExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "4 * 3 = 12";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -75,12 +81,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void MultiMathExpression_Equals_ConstantExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "4 * 3 - 2 = 12 * (6 - 3) - 26";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -88,12 +95,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void ConstantExpression_Equals_ConstantExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "12 = 12";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -101,12 +109,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_InExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "SQRT(144) = 12";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -114,12 +123,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateComplexCustomFunction_InExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "(12 + 3) / SQRT(15 * 15) = 1";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -127,12 +137,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_LogicalOperatorInExpression_And()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "(12 + 3 = 15) and (4 + 12 = 16)";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -140,12 +151,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_LogicalOperatorInExpression_Or()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "(12 + 3 = 15) or (4 + 12 = 10)";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -153,12 +165,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_ComplexLogicalOperatorInExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "(12 + 3 = 15) and ((12 + 3 = 15) or (13 + 2 = 10))";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -166,25 +179,57 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_FieldInExpression()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 2500 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "100 / SQRT([Age]) = 2";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
 
         [Test]
+        public void EvaluateCustomFunction_FieldInExpressionRunsTwice_IsFaster()
+        {
+            Person person = new Person { Age = 2500 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
+
+            string expression = "100 / SQRT([Age]) = 2";
+
+            //Queue queue = parser.Parse(expression);
+            bool firstResult = parser.Parse(expression).Outcome;
+            bool secondResult = parser.Parse(expression).Outcome;
+
+            Assert.That(firstResult == secondResult);           
+        }
+
+
+        [Test]
+        public void Just_Two_Expressions_BoundByALogicalExpression()
+        {
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
+
+            string expression = "[Age] > 16 and [IsMarried] = true";
+
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
+
+            Assert.That(result.Equals(false));
+        }
+
+        [Test]
         public void Evaluate_StringComparisation_ReturnsTrue()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "'John Doe' = 'John Doe'";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -192,12 +237,13 @@ namespace OpenB.DSL.Test
         [Test]
         public void Evaluate_StringComparisation_ReturnsFalse()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
             string expression = "'Jane Doe' != 'John Doe'";
 
-            Queue queue = parser.Parse(expression);
-            bool result = parser.Evaluate(queue);
+            //Queue queue = parser.Parse(expression);
+            bool result = parser.Parse(expression).Outcome;
 
             Assert.That(result.Equals(true));
         }
@@ -205,14 +251,12 @@ namespace OpenB.DSL.Test
         [Test]
         public void Evaluate_StringComparisation_ThrowsException()
         {
-            ExpressionParser parser = ExpressionParser.GetInstance();
+            Person person = new Person { Age = 23 };
+            ExpressionParser parser = ExpressionParser.GetInstance(person);
 
-            string expression = "'Jane Doe' > 'John Doe'";
+            string expression = "'Jane Doe' > 'John Doe'";            
 
-            Queue queue = parser.Parse(expression);
-            
-
-            Assert.Throws<NotSupportedException>(() => parser.Evaluate(queue));
+            Assert.Throws<NotSupportedException>(() => parser.Parse(expression));
         }
     }
 }

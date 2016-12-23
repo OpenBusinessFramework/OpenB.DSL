@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
@@ -24,8 +25,15 @@ namespace OpenB.DSL
         internal object Evaluate(Token token)
         {
             if (token.Type == "FIELD")
-            {                
-                return modelEvaluator.Evaluate(token.Contents);
+            {
+                Regex fieldExpression = new Regex(@"\[(?<contents>.*)\]");
+                Match match = fieldExpression.Match(token.Contents);
+                if (match.Success && match.Groups.Count > 0)
+                {
+                    return modelEvaluator.Evaluate(match.Groups["contents"].Value);
+                }
+                throw new NotSupportedException("Cannot parse field");
+               
             }
 
             if (token.Type == "INT")
@@ -36,6 +44,11 @@ namespace OpenB.DSL
             if (token.Type == "QUOTED_STRING")
             {
                 return token.Contents.Replace("'", "");                
+            }
+
+            if (token.Type == "BOOLEAN")
+            {
+                return bool.Parse(token.Contents);
             }
 
             throw new NotSupportedException($"Cannot evaluate token of type {token.Type} at {token.LineNumber}, {token.Position}.");
