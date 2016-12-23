@@ -26,18 +26,18 @@ namespace OpenB.DSL
             this.symbolFactory = symbolFactory;
         }
 
-        internal IEQualityExpression GetExpression(object left, object right, string contents)
+        internal IEQualityExpression GetExpression(IExpression left, IExpression right, string contents)
         {
-            if (left is string || right is string)
+            if (left is StringConstantExpression || right is StringConstantExpression)
             {
                 if (contents == "=")
                 {
-                    return new StringComparisionIsEqualExpression(left.ToString(), right.ToString());
+                    return new StringComparisionIsEqualExpression(left, right);
                 }
 
                 if (contents == "!=")
                 {
-                    return new StringComparisionNotEqualExpression(left.ToString(), right.ToString());
+                    return new StringComparisionNotEqualExpression(left, right);
                 }
 
                 throw new NotSupportedException($"Equality operator {contents} is not supported for arguments {left} and {right}.");
@@ -45,28 +45,27 @@ namespace OpenB.DSL
             }
 
             // TODO: Type checking for left and right.
-            double leftHand = Convert.ToDouble(left);
-            double rightHand = Convert.ToDouble(right);
+           
 
             switch (contents)
             {
                 case "+":
-                    return new AdditionExpression(leftHand, rightHand);
+                    return new AdditionExpression(left, right);
                 case "-":
-                    return new SubstractionExpression(leftHand, rightHand);
+                    return new SubstractionExpression(left, right);
                 case "*":
-                    return new MultiplyExpression(leftHand, rightHand);
+                    return new MultiplyExpression(left, right);
                 case "/":
-                    return new DivisionExpression(leftHand, rightHand);
+                    return new DivisionExpression(left, right);
 
                 case "=":
-                    return new EqualExpression(leftHand, rightHand);
+                    return new EqualExpression(left, right);
                 case "<":
-                    return new LessThanExpression(leftHand, rightHand);
+                    return new LessThanExpression(left, right);
                 case ">":
-                    return new MoreThanExpression(leftHand, rightHand);
+                    return new MoreThanExpression(left, right);
                 case "!=":
-                    return new NotEqualExpression(leftHand, rightHand);
+                    return new NotEqualExpression(left, right);
 
             }
             throw new NotSupportedException();
@@ -89,17 +88,15 @@ namespace OpenB.DSL
 
         }
 
-        internal IEQualityExpression GetLogicalExpression(object leftHand, object rightHand, string contents)
-        {
-            bool leftHandBoolean = (bool)leftHand;
-            bool rightHandBoolean = (bool)rightHand;
+        internal IEQualityExpression GetLogicalExpression(IExpression leftHand, IExpression rightHand, string contents)
+        {          
 
             switch (contents)
             {
                 case "and":
-                    return new LogicalAndExpression(leftHandBoolean, rightHandBoolean);
+                    return new LogicalAndExpression(leftHand, rightHand);
                 case "or":
-                    return new LogicalOrExpression(leftHandBoolean, rightHandBoolean);
+                    return new LogicalOrExpression(leftHand, rightHand);
             }
 
             throw new NotSupportedException($"Logical operator {contents} is not supported.");

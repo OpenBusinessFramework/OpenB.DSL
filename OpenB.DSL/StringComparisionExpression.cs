@@ -4,10 +4,10 @@ namespace OpenB.DSL
 {
     internal class StringComparisionNotEqualExpression : IEQualityExpression
     {
-        private string left;
-        private string right;
+        private IExpression left;
+        private IExpression right;
 
-        public StringComparisionNotEqualExpression(string left, string right)
+        public StringComparisionNotEqualExpression(IExpression left, IExpression right)
         {
             this.left = left;
             this.right = right;
@@ -16,16 +16,16 @@ namespace OpenB.DSL
 
         public object Evaluate()
         {
-            return !left.Equals(right);
+            return !left.Evaluate().Equals(right.Evaluate());
         }
     }
 
     internal class StringComparisionIsEqualExpression : IEQualityExpression
     {
-        private string left;
-        private string right;
+        private IExpression left;
+        private IExpression right;
 
-        public StringComparisionIsEqualExpression(string left, string right)
+        public StringComparisionIsEqualExpression(IExpression left, IExpression right)
         {
             this.left = left;
             this.right = right;
@@ -34,7 +34,7 @@ namespace OpenB.DSL
 
         public object Evaluate()
         {
-            return left.Equals(right);
+            return left.Evaluate().Equals(right.Evaluate());
         }
     }
 }

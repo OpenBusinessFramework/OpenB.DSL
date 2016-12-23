@@ -4,10 +4,10 @@ namespace OpenB.DSL
 {
     internal class LessThanExpression : IEQualityExpression
     {
-        private double leftHand;
-        private double rightHand;
+        private IExpression leftHand;
+        private IExpression rightHand;
 
-        public LessThanExpression(double leftHand, double rightHand)
+        public LessThanExpression(IExpression leftHand, IExpression rightHand)
         {
             this.leftHand = leftHand;
             this.rightHand = rightHand;
@@ -15,7 +15,7 @@ namespace OpenB.DSL
 
         public object Evaluate()
         {
-            return leftHand < rightHand;
+            return (double)leftHand.Evaluate() < (double)rightHand.Evaluate();
         }
     }
 }

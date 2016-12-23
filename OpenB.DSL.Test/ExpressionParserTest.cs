@@ -203,7 +203,7 @@ namespace OpenB.DSL.Test
             bool secondResult = parser.Parse(expression).Outcome;
 
             Assert.That(firstResult == secondResult);           
-        }
+        }     
 
 
         [Test]

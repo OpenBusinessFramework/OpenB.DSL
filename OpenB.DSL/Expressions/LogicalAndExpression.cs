@@ -4,10 +4,10 @@ namespace OpenB.DSL
 {
     internal class LogicalAndExpression : IEQualityExpression
     {
-        private bool leftHandBoolean;
-        private bool rightHandBoolean;
+        private IExpression leftHandBoolean;
+        private IExpression rightHandBoolean;
 
-        public LogicalAndExpression(bool leftHandBoolean, bool rightHandBoolean)
+        public LogicalAndExpression(IExpression leftHandBoolean, IExpression rightHandBoolean)
         {
             this.leftHandBoolean = leftHandBoolean;
             this.rightHandBoolean = rightHandBoolean;
@@ -15,7 +15,7 @@ namespace OpenB.DSL
 
         public object Evaluate()
         {
-            return leftHandBoolean && rightHandBoolean;
+            return (bool)leftHandBoolean.Evaluate() && (bool)rightHandBoolean.Evaluate();
         }
     }
 }

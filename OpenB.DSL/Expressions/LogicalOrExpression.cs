@@ -4,18 +4,18 @@ namespace OpenB.DSL
 {
     internal class LogicalOrExpression : IEQualityExpression
     {
-        private bool leftHandBoolean;
-        private bool rightHandBoolean;
+        private IExpression leftHandBoolean;
+        private IExpression rightHandBoolean;
 
-        public LogicalOrExpression(bool leftHandBoolean, bool rightHandBoolean)
+        public LogicalOrExpression(IExpression leftHandExpression, IExpression rightHandExpression)
         {
-            this.leftHandBoolean = leftHandBoolean;
-            this.rightHandBoolean = rightHandBoolean;
+            this.leftHandBoolean = leftHandExpression;
+            this.rightHandBoolean = rightHandExpression;
         }
 
         public object Evaluate()
         {
-            return leftHandBoolean || rightHandBoolean;
+            return (bool)leftHandBoolean.Evaluate() || (bool)rightHandBoolean.Evaluate();
         }
     }
 }

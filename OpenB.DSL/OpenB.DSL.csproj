@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseEqualityExpression.cs" />
+    <Compile Include="BooleanConstantExpression.cs" />
+    <Compile Include="ConstantExpressionFactory.cs" />
     <Compile Include="CoreConfiguration.cs" />
     <Compile Include="EqualExpression.cs" />
     <Compile Include="Expressions\Math\AdditionExpression.cs" />
@@ -50,6 +52,8 @@
     <Compile Include="Expressions\IExpression.cs" />
     <Compile Include="Expressions\Math\MultiplyExpression.cs" />
     <Compile Include="Expressions\Math\SubstractionExpression.cs" />
+    <Compile Include="FieldExpression.cs" />
+    <Compile Include="IConstantExpression.cs" />
     <Compile Include="IMatcher.cs" />
     <Compile Include="Functions\IParserFunction.cs" />
     <Compile Include="LessThanExpression.cs" />
@@ -57,8 +61,10 @@
     <Compile Include="Expressions\LogicalAndExpression.cs" />
     <Compile Include="Expressions\LogicalOrExpression.cs" />
     <Compile Include="Md5Hash.cs" />
+    <Compile Include="ModelReferenceCache.cs" />
     <Compile Include="MoreThanExpression.cs" />
     <Compile Include="NotEqualExpression.cs" />
+    <Compile Include="NumberConstantExpression.cs" />
     <Compile Include="ParserResult.cs" />
     <Compile Include="Reflection\ModelEvaluator.cs" />
     <Compile Include="ParserFunctionAttribute.cs" />
@@ -69,10 +75,10 @@
     <Compile Include="Expressions\SymbolExpression.cs" />
     <Compile Include="Functions\SquareRoot.cs" />
     <Compile Include="StringComparisionExpression.cs" />
+    <Compile Include="StringConstantExpression.cs" />
     <Compile Include="SymbolFactory.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TokenDefinition.cs" />
-    <Compile Include="TokenEvaluator.cs" />
     <Compile Include="Tokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +86,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Handlers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

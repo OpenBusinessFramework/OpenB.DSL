@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
@@ -17,12 +18,12 @@ namespace OpenB.DSL
 
         private CoreConfiguration coreConfiguration;
         private ExpressionFactory expressionFactory;
-        readonly TokenEvaluator tokenEvaluator;
+        readonly ConstantExpressionFactory constantExpressionFactory;
 
-        private ExpressionParser(CoreConfiguration configuration, ExpressionFactory expressionFactory, TokenEvaluator tokenEvaluator)
+        private ExpressionParser(CoreConfiguration configuration, ExpressionFactory expressionFactory, ConstantExpressionFactory constantExpressionFactory)
         {
-            if (tokenEvaluator == null)
-                throw new ArgumentNullException(nameof(tokenEvaluator));
+            if (constantExpressionFactory == null)
+                throw new ArgumentNullException(nameof(constantExpressionFactory));
 
             if (expressionFactory == null)
                 throw new ArgumentNullException(nameof(expressionFactory));
@@ -31,7 +32,7 @@ namespace OpenB.DSL
 
             this.expressionFactory = expressionFactory;
             this.coreConfiguration = configuration;
-            this.tokenEvaluator = tokenEvaluator;
+            this.constantExpressionFactory = constantExpressionFactory;
         }
 
         public static ExpressionParser GetInstance(object context)
@@ -41,9 +42,9 @@ namespace OpenB.DSL
                 expressionParser = new ExpressionParser(
                     new CoreConfiguration(),
                     new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration())),
-                    new TokenEvaluator(CultureInfo.InvariantCulture, new ModelEvaluator(context)));
+                    new ConstantExpressionFactory(CultureInfo.InvariantCulture, new ModelEvaluator(context)));
             }
-            return expressionParser;            
+            return expressionParser;
         }
 
         internal Queue ParseInternal(string expresion)
@@ -166,13 +167,13 @@ namespace OpenB.DSL
                 Queue newQueue = (Queue)outputQueue.Clone();
 
                 quequeCache.Add(expression, newQueue);
-            }            
-    
+            }
+
             if (outputQueue == null)
                 throw new ArgumentNullException(nameof(outputQueue));
 
-            Stack<object> argumentStack = new Stack<object>();
-            Stack<IExpression> expressionStack = new Stack<IExpression>();
+            Stack<IExpression> argumentStack = new Stack<IExpression>();
+
 
             while (outputQueue.Count > 0)
             {
@@ -180,43 +181,59 @@ namespace OpenB.DSL
                 switch (currentToken.Type)
                 {
                     case "OPERATOR":
-                        expressionStack.Push(HandleOperator(outputQueue, argumentStack, currentToken));
+                        HandleOperator(outputQueue, argumentStack, currentToken);
                         break;
 
                     case "EQUALITY_COMPARER":
-                        expressionStack.Push(HandleEqualityComparer(outputQueue, argumentStack, currentToken));
+                        HandleEqualityComparer(outputQueue, argumentStack, currentToken);
                         break;
 
                     case "SYMBOL":
-                        expressionStack.Push(HandleSymbol(outputQueue, argumentStack, currentToken));
-                       
+                        HandleSymbol(outputQueue, argumentStack, currentToken);
                         break;
 
                     case "LOGICAL_OPERATOR":
-                        expressionStack.Push(HandleLogicalOperation(outputQueue, argumentStack, currentToken));
+                        HandleLogicalOperation(outputQueue, argumentStack, currentToken);
+                        break;
+
+                    case "FIELD":
+                        HandleField(outputQueue, argumentStack, currentToken);
                         break;
 
                     default:
-                        CreateArgument(outputQueue, argumentStack, currentToken);
+                        HandleConstant(outputQueue, argumentStack, currentToken);
                         break;
                 }
             }
-            return new ParserResult((bool)argumentStack.Pop());
+            return new ParserResult((bool)argumentStack.Pop().Evaluate());
         }
 
-        private IExpression HandleLogicalOperation(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private void HandleField(Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)
         {
-            object rightHand = argumentStack.Pop();
-            object leftHand = argumentStack.Pop();
+            Regex fieldExpression = new Regex(@"\[(?<contents>.*)\]");
+            Match match = fieldExpression.Match(currentToken.Contents);
+            if (!match.Success || match.Groups.Count == 0)
+            {
+                throw new NotSupportedException("Cannot parse field");               
+            }           
+
+            expressionStack.Push(new FieldExpression(currentToken.Contents));
+            outputQueue.Dequeue();
+        }
+
+        private void HandleLogicalOperation(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
+        {
+            IExpression rightHand = argumentStack.Pop();
+            IExpression leftHand = argumentStack.Pop();
             IEQualityExpression expression = expressionFactory.GetLogicalExpression(leftHand, rightHand, currentToken.Contents);
-            argumentStack.Push(expression.Evaluate());
+            argumentStack.Push(expression);
 
             outputQueue.Dequeue();
 
-            return expression;
+
         }
 
-        private IExpression HandleSymbol(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private void HandleSymbol(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
         {
             Type expressionType = expressionFactory.GetSymbolicExpression(currentToken.Contents);
             ConstructorInfo constructor = expressionType.GetConstructors().FirstOrDefault();
@@ -225,50 +242,44 @@ namespace OpenB.DSL
 
             for (int x = 0; x < constructor.GetParameters().Length; x++)
             {
-                arguments.Add(argumentStack.Pop());
+                arguments.Add(argumentStack.Pop().Evaluate());
             }
 
             IEQualityExpression expression = (IEQualityExpression)Activator.CreateInstance(expressionType, arguments.ToArray());
 
-            argumentStack.Push(expression.Evaluate());
+            argumentStack.Push(expression);
             outputQueue.Dequeue();
-
-            return (expression);
         }
 
-        private IExpression HandleOperator(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private void HandleOperator(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
         {
-            object rightHand = argumentStack.Pop();
-            object leftHand = argumentStack.Pop();
+            IExpression rightHand = argumentStack.Pop();
+            IExpression leftHand = argumentStack.Pop();
             IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
-            argumentStack.Push(expression.Evaluate());
+            argumentStack.Push(expression);
 
             outputQueue.Dequeue();
-
-            return (expression);
         }
 
-        private IExpression HandleEqualityComparer(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private void HandleEqualityComparer(Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)
         {
-            object rightHand = argumentStack.Pop();
-            object leftHand = argumentStack.Pop();
+            IExpression rightHand = expressionStack.Pop();
+            IExpression leftHand = expressionStack.Pop();
             IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
-            argumentStack.Push(expression.Evaluate());
+            expressionStack.Push(expression);
 
             outputQueue.Dequeue();
-
-            return (expression);
         }
 
-        private IExpression CreateArgument(Queue outputQueue, Stack<object> argumentStack, Token currentToken)
+        private void HandleConstant(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
         {
-            object tokenValue = tokenEvaluator.Evaluate(currentToken);
+            IExpression tokenValue = constantExpressionFactory.Evaluate(currentToken);
 
             argumentStack.Push(tokenValue);
 
             outputQueue.Dequeue();
 
-            return new ArgumentExpression(tokenValue);
+
         }
     }
 

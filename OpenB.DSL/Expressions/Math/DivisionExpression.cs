@@ -2,10 +2,10 @@
 {
     internal class DivisionExpression : IEQualityExpression
     {
-        private double leftHand;
-        private double rightHand;
+        private IExpression leftHand;
+        private IExpression rightHand;
 
-        public DivisionExpression(double leftHand, double rightHand)
+        public DivisionExpression(IExpression leftHand, IExpression rightHand)
         {
             this.leftHand = leftHand;
             this.rightHand = rightHand;            
@@ -13,7 +13,7 @@
 
         public object Evaluate()
         {
-            return leftHand / rightHand;
+            return (double)leftHand.Evaluate() / (double)rightHand.Evaluate();
         }
     }
 }

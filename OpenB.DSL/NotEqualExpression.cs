@@ -4,10 +4,10 @@ namespace OpenB.DSL
 {
     internal class NotEqualExpression : BaseEqualityExpression, IEQualityExpression
     {
-        private double leftHand;
-        private double rightHand;
+        private IExpression leftHand;
+        private IExpression rightHand;
 
-        public NotEqualExpression(double leftHand, double rightHand)
+        public NotEqualExpression(IExpression leftHand, IExpression rightHand)
         {
             this.leftHand = leftHand;
             this.rightHand = rightHand;
@@ -15,8 +15,8 @@ namespace OpenB.DSL
 
         public object Evaluate()
         {
-            double leftValue = Convert.ToDouble(leftHand);
-            double rightValue = Convert.ToDouble(rightHand);
+            double leftValue = Convert.ToDouble(leftHand.Evaluate());
+            double rightValue = Convert.ToDouble(rightHand.Evaluate());
 
             return !nearlyEqual(leftValue, rightValue, 0.00000000001d);
         }
