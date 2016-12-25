@@ -15,5 +15,6 @@ namespace OpenB.DSL
     public interface IExpression
     {
         object Evaluate();
+        string GenerateCode();
     }
 }

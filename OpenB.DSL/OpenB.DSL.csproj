@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenB.Core, Version=1.0.6188.19437, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenB.Core.1.0.1-Beta\lib\net40\OpenB.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentExpression.cs" />
     <Compile Include="BaseEqualityExpression.cs" />
     <Compile Include="BooleanConstantExpression.cs" />
     <Compile Include="ConstantExpressionFactory.cs" />
@@ -65,6 +70,7 @@
     <Compile Include="MoreThanExpression.cs" />
     <Compile Include="NotEqualExpression.cs" />
     <Compile Include="NumberConstantExpression.cs" />
+    <Compile Include="ParserContext.cs" />
     <Compile Include="ParserResult.cs" />
     <Compile Include="Reflection\ModelEvaluator.cs" />
     <Compile Include="ParserFunctionAttribute.cs" />
@@ -75,6 +81,7 @@
     <Compile Include="Expressions\SymbolExpression.cs" />
     <Compile Include="Functions\SquareRoot.cs" />
     <Compile Include="StringComparisionExpression.cs" />
+    <Compile Include="StringComparisionIsEqualExpression.cs" />
     <Compile Include="StringConstantExpression.cs" />
     <Compile Include="SymbolFactory.cs" />
     <Compile Include="Token.cs" />
@@ -86,6 +93,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Handlers\" />

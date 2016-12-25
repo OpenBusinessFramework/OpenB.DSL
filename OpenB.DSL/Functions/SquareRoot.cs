@@ -17,5 +17,11 @@ namespace OpenB.DSL.Functions
         {
             return Math.Sqrt(Number);
         }
+
+        public string GenerateCode()
+        {
+            // TODO: Add dynamic usings.
+            return $"System.Math.Sqrt({Number})";
+        }
     }
 }

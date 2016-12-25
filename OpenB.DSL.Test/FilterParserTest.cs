@@ -11,13 +11,14 @@ namespace OpenB.DSL.Test
     {
         [Test]
         public void DoSomething()
-        {
-            IRepository<Person> personRepository = new Repository<Person>();
-
+        {          
             string expression = "GetYearFromDate([DateOfBirth]) > 1980 and [Gender] = 'Male'";
 
-            ExpressionParser parser = ExpressionParser.GetInstance(personRepository);
-            parser.Parse(expression);
+            IRepository<Person> personRepository = new Repository<Person>();
+           
+
+            //ExpressionParser parser = ExpressionParser.GetInstance();
+            //parser.Parse(expression);
         }
 
         public class Person : IModel
@@ -63,35 +64,12 @@ namespace OpenB.DSL.Test
             public Date DateOfBirth { get; set; }
         }
 
-        public interface IRepository<TModel> where TModel : IModel
-        {
-            IEnumerable<TModel> Read(IList<ICondition> conditions);
-            
-        }
-
-        public interface IRepository
-        {
-
-        }
-
-        public enum GenderType
-        {
-            Male,
-            Female
-        }
+       
     }
 
-    internal class Repository<T> : IRepository<T> where T : IModel
-    {
-        public IEnumerable<T> Read(IList<ICondition> conditions)
-        {
-            throw new NotImplementedException();
-        }
+   
 
-        
-    }
-
-    public interface ICondition
+    public interface IFilter
     {
     }
 

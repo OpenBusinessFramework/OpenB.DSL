@@ -2,11 +2,11 @@
 {
     public class ParserResult
     {
-        public bool Outcome { get; private set; }
+        public IExpression CompiledExpression { get; private set; }
 
-        public ParserResult(bool outcome)
+        public ParserResult(IExpression compiledExpression)
         {
-            this.Outcome = outcome;
+            this.CompiledExpression = compiledExpression;
         }         
     }
 }

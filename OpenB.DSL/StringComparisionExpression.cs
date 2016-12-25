@@ -18,23 +18,15 @@ namespace OpenB.DSL
         {
             return !left.Evaluate().Equals(right.Evaluate());
         }
-    }
 
-    internal class StringComparisionIsEqualExpression : IEQualityExpression
-    {
-        private IExpression left;
-        private IExpression right;
-
-        public StringComparisionIsEqualExpression(IExpression left, IExpression right)
+        public string GenerateCode()
         {
-            this.left = left;
-            this.right = right;
-
+            return $"!({left.GenerateCode()}).Equals({right.GenerateCode()})";
         }
 
-        public object Evaluate()
+        public override string ToString()
         {
-            return left.Evaluate().Equals(right.Evaluate());
+            return $"{left} != {right}";
         }
     }
 }

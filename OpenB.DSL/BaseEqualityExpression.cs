@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OpenB.DSL
 {
-    internal abstract class BaseEqualityExpression
+    public abstract class BaseEqualityExpression
     {
         protected static bool nearlyEqual(double a, double b, double epsilon)
         {
@@ -24,6 +25,32 @@ namespace OpenB.DSL
             { // use relative error
                 return diff / (absA + absB) < epsilon;
             }
+        }
+    }
+
+    internal class ExpressionCache
+    {
+        private static ExpressionCache instance;
+
+        private IList<IExpression> expressions;
+
+        private ExpressionCache()
+        {
+            expressions = new List<IExpression>();
+        }
+
+        public void Add(IExpression expression)
+        {
+            expressions.Add(expression);
+        }
+
+        internal static ExpressionCache GetInstance()
+        {
+           if (instance == null)
+            {
+                instance = new ExpressionCache();
+            }
+            return instance;
         }
     }
 }

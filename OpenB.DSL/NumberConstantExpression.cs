@@ -1,4 +1,6 @@
-﻿namespace OpenB.DSL
+﻿using System.Globalization;
+
+namespace OpenB.DSL
 {
 
     internal class NumberConstantExpression : IConstantExpression
@@ -23,6 +25,16 @@
         public object Evaluate()
         {
             return value;
+        }
+
+        public override string ToString()
+        {
+            return value.ToString();
+        }
+
+        public string GenerateCode()
+        {
+            return value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

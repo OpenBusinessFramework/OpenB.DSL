@@ -1,4 +1,6 @@
-﻿namespace OpenB.DSL.Expressions.Math
+﻿using System;
+
+namespace OpenB.DSL.Expressions.Math
 {
 
     internal class AdditionExpression : IEQualityExpression
@@ -15,6 +17,16 @@
         public object Evaluate()
         {
             return (double)leftHand.Evaluate() + (double)rightHand.Evaluate();
+        }
+
+        public string GenerateCode()
+        {
+            return $"({leftHand.GenerateCode()}) + ({rightHand.GenerateCode()})";
+        }
+
+        public override string ToString()
+        {
+            return $"{leftHand} + {rightHand}";
         }
     }
 }

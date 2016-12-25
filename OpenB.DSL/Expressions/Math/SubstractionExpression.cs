@@ -16,5 +16,15 @@
         {
             return (double)leftHand.Evaluate() - (double)rightHand.Evaluate();
         }
+
+        public override string ToString()
+        {
+            return "${leftHand} - ${rightHand}";
+        }
+
+        public string GenerateCode()
+        {
+            return $"({leftHand.GenerateCode()}) - ({rightHand.GenerateCode()})";
+        }
     }
 }

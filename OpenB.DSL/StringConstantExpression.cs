@@ -12,7 +12,12 @@
 
         public object Evaluate()
         {
-            return (string)value;
+            return $"'{value}'";
+        }
+
+        public string GenerateCode()
+        {
+            return "\"value\"";
         }
     }
 }

@@ -10,15 +10,14 @@ namespace OpenB.DSL
 
         readonly ModelEvaluator modelEvaluator;
 
-        public ConstantExpressionFactory(CultureInfo cultureInfo, ModelEvaluator modelEvaluator)
+        public ConstantExpressionFactory(CultureInfo cultureInfo)
         {
-            if (modelEvaluator == null)
-                throw new ArgumentNullException(nameof(modelEvaluator));
+         
             if (cultureInfo == null)
                 throw new ArgumentNullException(nameof(cultureInfo));
 
             this.cultureInfo = cultureInfo;
-            this.modelEvaluator = modelEvaluator;
+            
         }
 
         internal IExpression Evaluate(Token token)

@@ -14,5 +14,15 @@
         {
             return value;
         }
+
+        public override string ToString()
+        {
+            return string.Concat("{Boolean: ", value ? "true" : "false", "}");
+        }
+
+        public string GenerateCode()
+        {
+            return value.ToString().ToLower();
+        }
     }
 }

@@ -4,17 +4,29 @@ namespace OpenB.DSL
 {
     internal class FieldExpression : IExpression
     {
-        private string contents;
-      
+        ParserContext parserContext;
+        string fieldName;
 
-        public FieldExpression(string contents)
-        {          
-            this.contents = contents;
+        public FieldExpression(ParserContext context, string fieldName)
+        {
+            parserContext = context;
+            this.fieldName = fieldName;
         }
 
         public object Evaluate()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return fieldName;
+        }
+
+        public string GenerateCode()
+        {
+            // TODO: All
+            return $"field";
         }
     }
 }

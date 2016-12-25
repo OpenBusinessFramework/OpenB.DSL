@@ -8,5 +8,12 @@ namespace OpenB.DSL
         {
             throw new NotImplementedException();
         }
+
+        public string GenerateCode()
+        {
+            throw new NotSupportedException();
+        }
+
+
     }
 }

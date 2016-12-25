@@ -7,10 +7,10 @@ namespace OpenB.DSL
         private IExpression left;
         private IExpression right;
 
-        public EqualExpression(IExpression left, IExpression right)
+        public EqualExpression(IExpression leftSide, IExpression ightSide)
         {
-            this.left = left;
-            this.right = right;
+            this.left = leftSide;
+            this.right = ightSide;
         }
 
         public object Evaluate()
@@ -22,6 +22,15 @@ namespace OpenB.DSL
             return nearlyEqual(leftValue, rightValue, 0.00000000001d);
         }
 
-       
+        public string GenerateCode()
+        {
+            return $"({left.GenerateCode()}) == ({right.GenerateCode()})";
+        }
+
+        public override string ToString()
+        {
+            return string.Concat(left.ToString(), " = ", right.ToString());
+        }
+
     }
 }

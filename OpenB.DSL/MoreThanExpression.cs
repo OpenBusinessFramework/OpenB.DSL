@@ -17,5 +17,15 @@ namespace OpenB.DSL
         {
             return (double)leftHand.Evaluate() > (double)rightHand.Evaluate();
         }
+
+        public override string ToString()
+        {
+            return string.Concat(leftHand.ToString(), " > ", rightHand.ToString());
+        }
+
+        public string GenerateCode()
+        {
+            return $"({leftHand.GenerateCode()}) > ({rightHand.GenerateCode()})";
+        }
     }
 }

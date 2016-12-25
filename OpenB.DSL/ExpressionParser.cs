@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
 {
@@ -21,7 +20,8 @@ namespace OpenB.DSL
         readonly ConstantExpressionFactory constantExpressionFactory;
 
         private ExpressionParser(CoreConfiguration configuration, ExpressionFactory expressionFactory, ConstantExpressionFactory constantExpressionFactory)
-        {
+        {        
+
             if (constantExpressionFactory == null)
                 throw new ArgumentNullException(nameof(constantExpressionFactory));
 
@@ -35,14 +35,14 @@ namespace OpenB.DSL
             this.constantExpressionFactory = constantExpressionFactory;
         }
 
-        public static ExpressionParser GetInstance(object context)
+        public static ExpressionParser GetInstance()
         {
             if (expressionParser == null)
             {
                 expressionParser = new ExpressionParser(
                     new CoreConfiguration(),
                     new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration())),
-                    new ConstantExpressionFactory(CultureInfo.InvariantCulture, new ModelEvaluator(context)));
+                    new ConstantExpressionFactory(CultureInfo.InvariantCulture));
             }
             return expressionParser;
         }
@@ -154,8 +154,11 @@ namespace OpenB.DSL
             return outputQueue;
         }
 
-        public ParserResult Parse(string expression)
+        public ParserResult Parse(ParserContext context, string expression)
         {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
             Queue outputQueue;
             if (quequeCache.ContainsKey(expression))
             {
@@ -197,7 +200,7 @@ namespace OpenB.DSL
                         break;
 
                     case "FIELD":
-                        HandleField(outputQueue, argumentStack, currentToken);
+                        HandleField(context, outputQueue, argumentStack, currentToken);
                         break;
 
                     default:
@@ -205,11 +208,12 @@ namespace OpenB.DSL
                         break;
                 }
             }
-            return new ParserResult((bool)argumentStack.Pop().Evaluate());
+            return new ParserResult(argumentStack.Pop());
         }
 
-        private void HandleField(Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)
-        {
+        private void HandleField(ParserContext context, Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)
+        {           
+
             Regex fieldExpression = new Regex(@"\[(?<contents>.*)\]");
             Match match = fieldExpression.Match(currentToken.Contents);
             if (!match.Success || match.Groups.Count == 0)
@@ -217,7 +221,7 @@ namespace OpenB.DSL
                 throw new NotSupportedException("Cannot parse field");               
             }           
 
-            expressionStack.Push(new FieldExpression(currentToken.Contents));
+            expressionStack.Push(new FieldExpression(context, match.Groups["contents"].Value));
             outputQueue.Dequeue();
         }
 
@@ -268,6 +272,8 @@ namespace OpenB.DSL
             IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
             expressionStack.Push(expression);
 
+            ExpressionCache.GetInstance().Add(expression);
+
             outputQueue.Dequeue();
         }
 
@@ -283,23 +289,8 @@ namespace OpenB.DSL
         }
     }
 
-    internal class ArgumentExpression : IExpression
-    {
-        private object tokenValue;
-
-        public ArgumentExpression(object tokenValue)
-        {
-            this.tokenValue = tokenValue;
-        }
-
-        public object Evaluate()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public interface IParser
     {
-        ParserResult Parse(string expression);
+        ParserResult Parse(ParserContext parserContext, string expression);
     }
 }

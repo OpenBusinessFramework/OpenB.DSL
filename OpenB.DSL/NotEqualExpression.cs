@@ -25,5 +25,10 @@ namespace OpenB.DSL
         {
             return $"{leftHand} != {rightHand}";
         }
+
+        public string GenerateCode()
+        {
+            return $"!({leftHand}).Equals({rightHand})";
+        }
     }
 }
