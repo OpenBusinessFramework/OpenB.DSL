@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGeneratorTest.cs" />
     <Compile Include="ContextSelectorTest.cs" />
     <Compile Include="ExpressionParserTest.cs" />
     <Compile Include="FilterParserTest.cs" />

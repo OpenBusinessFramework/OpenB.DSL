@@ -17,7 +17,7 @@
 
         public string GenerateCode()
         {
-            return "\"value\"";
+            return $"\"{value}\"";
         }
     }
 }

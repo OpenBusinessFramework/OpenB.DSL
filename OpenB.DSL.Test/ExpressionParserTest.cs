@@ -233,4 +233,23 @@ namespace OpenB.DSL.Test
             Assert.Throws<NotSupportedException>(() => parser.Parse(expressionContext, expression));
         }
     }
+
+    public class CodeGenerator
+    {
+        readonly IParser parser;
+
+        public CodeGenerator(IParser parser)
+        {
+           
+            if (parser == null)
+                throw new ArgumentNullException(nameof(parser));
+
+            this.parser = parser;
+        }
+
+        public string GenerateExpressionAssignment(ParserContext context, string expression)
+        {
+            return $"businessRules.Add({parser.Parse(context, expression).CompiledExpression.GenerateCode()});";
+        } 
+    }
 }

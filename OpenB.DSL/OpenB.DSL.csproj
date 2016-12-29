@@ -48,6 +48,7 @@
     <Compile Include="BaseEqualityExpression.cs" />
     <Compile Include="BooleanConstantExpression.cs" />
     <Compile Include="ConstantExpressionFactory.cs" />
+    <Compile Include="ContextSelectionExpression.cs" />
     <Compile Include="CoreConfiguration.cs" />
     <Compile Include="EqualExpression.cs" />
     <Compile Include="Expressions\Math\AdditionExpression.cs" />

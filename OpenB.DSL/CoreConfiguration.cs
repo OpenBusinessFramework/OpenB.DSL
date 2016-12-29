@@ -29,6 +29,9 @@ namespace OpenB.DSL
         public CoreConfiguration()
         {
             TokenDefinitions = new[] {
+            new TokenDefinition(@"all|one", "QUANTIFIER"),
+            new TokenDefinition(@"in", "SELECTOR"),
+            new TokenDefinition(@"having", "QUALIFIER"),
             new TokenDefinition(@"\[[A-Za-z]+(\.{0,1}[A-Za-z]+){0,}\]", "FIELD"),
             new TokenDefinition(@"([""'])(?:\\\1|.)*?\1", "QUOTED_STRING"),
             new TokenDefinition(@"\(", "SUB_EXPR_START"),
@@ -59,19 +62,24 @@ namespace OpenB.DSL
             // TODO: Rooting
             OperatorPrecedance = new List<OperatorItem>
             {
-                new OperatorItem(1, "^"),
-                new OperatorItem(2, "*"),
-                new OperatorItem(3, "/"),
-                new OperatorItem(4, "+"),
-                new OperatorItem(5, "-"),
+                new OperatorItem(2, "^"),
+                new OperatorItem(3, "*"),
+                new OperatorItem(4, "/"),
+                new OperatorItem(5, "+"),
+                new OperatorItem(6, "-"),
                 new OperatorItem(7, "and"),
                 new OperatorItem(7, "or"),
-                new OperatorItem(6, "="),
-                new OperatorItem(6, ">"),
-                new OperatorItem(6, "<"),
-                new OperatorItem(6, "!="),
+                new OperatorItem(7, "="),
+                new OperatorItem(7, ">"),
+                new OperatorItem(7, "<"),
+                new OperatorItem(7, "!="),
                 new OperatorItem(8, "("),
                 new OperatorItem(8, ")"),
+                new OperatorItem(9, "all"),
+                new OperatorItem(9, "one"),                
+                new OperatorItem(9, "in"),
+                new OperatorItem(9, "having"),
+
             };
 
         }

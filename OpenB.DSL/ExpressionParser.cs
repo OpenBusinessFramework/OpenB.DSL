@@ -61,8 +61,10 @@ namespace OpenB.DSL
             Queue outputQueue = new Queue();
             Stack operatorStack = new Stack();
 
-            foreach (Token token in tokens)
+            for (int x = 0; x < tokens.Count; x++)
             {
+                var token = tokens[x];
+
                 // Try to get values from tokens.
                 if (token.Type.Equals("INT") || token.Type.Equals("FLOAT") || token.Type.Equals("FIELD") || token.Type.Equals("QUOTED_STRING") || token.Type.Equals("BOOLEAN"))
                 {
@@ -90,6 +92,11 @@ namespace OpenB.DSL
                             outputQueue.Enqueue(operatorStack.Pop());
                         }
                     }
+                    operatorStack.Push(token);
+                }
+
+                if (token.Type.Equals("QUANTIFIER") || token.Type.Equals("SELECTOR") || token.Type.Equals("QUALIFIER"))
+                {                 
                     operatorStack.Push(token);
                 }
 
@@ -203,12 +210,30 @@ namespace OpenB.DSL
                         HandleField(context, outputQueue, argumentStack, currentToken);
                         break;
 
+                    case "QUALIFIER":
+                        HandleQualifier(outputQueue, argumentStack);
+                        break;
+
                     default:
                         HandleConstant(outputQueue, argumentStack, currentToken);
                         break;
                 }
             }
             return new ParserResult(argumentStack.Pop());
+        }
+
+        private void HandleQualifier(Queue outputQueue, Stack<IExpression> expressionStack)
+        {
+            var whereExpression = expressionStack.Pop();
+            var contextList = expressionStack.Pop();
+            var itemType = expressionStack.Pop();
+
+            outputQueue.Dequeue();
+            outputQueue.Dequeue();
+           
+            var quantifierToken = (Token)outputQueue.Dequeue();
+
+            expressionStack.Push(new ContextSelectionExpression(quantifierToken.Contents, whereExpression, contextList, itemType));
         }
 
         private void HandleField(ParserContext context, Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)

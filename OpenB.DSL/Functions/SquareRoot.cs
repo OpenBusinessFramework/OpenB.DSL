@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 
 namespace OpenB.DSL.Functions
 {
-
     [ParserFunction("SQRT")]
     public class SquareRoot : IParserFunction
     {
