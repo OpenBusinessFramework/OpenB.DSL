@@ -48,6 +48,8 @@
     <Compile Include="BaseEqualityExpression.cs" />
     <Compile Include="BooleanConstantExpression.cs" />
     <Compile Include="ConstantExpressionFactory.cs" />
+    <Compile Include="Handlers\EqualityComparerTokenHandler.cs" />
+    <Compile Include="Handlers\ConstantTokenHander.cs" />
     <Compile Include="ContextSelectionExpression.cs" />
     <Compile Include="CoreConfiguration.cs" />
     <Compile Include="EqualExpression.cs" />
@@ -59,20 +61,27 @@
     <Compile Include="Expressions\Math\MultiplyExpression.cs" />
     <Compile Include="Expressions\Math\SubstractionExpression.cs" />
     <Compile Include="FieldExpression.cs" />
+    <Compile Include="Handlers\FieldTokenHandler.cs" />
     <Compile Include="IConstantExpression.cs" />
     <Compile Include="IMatcher.cs" />
     <Compile Include="Functions\IParserFunction.cs" />
+    <Compile Include="Handlers\ITokenHandler.cs" />
+    <Compile Include="IParser.cs" />
     <Compile Include="LessThanExpression.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Expressions\LogicalAndExpression.cs" />
     <Compile Include="Expressions\LogicalOrExpression.cs" />
+    <Compile Include="Handlers\LogicalOperatorTokenHandler.cs" />
     <Compile Include="Md5Hash.cs" />
     <Compile Include="ModelReferenceCache.cs" />
     <Compile Include="MoreThanExpression.cs" />
     <Compile Include="NotEqualExpression.cs" />
     <Compile Include="NumberConstantExpression.cs" />
+    <Compile Include="Handlers\OperatorTokenHandler.cs" />
     <Compile Include="ParserContext.cs" />
     <Compile Include="ParserResult.cs" />
+    <Compile Include="Handlers\QualifierTokenHandler.cs" />
+    <Compile Include="PaserContext.cs" />
     <Compile Include="Reflection\ModelEvaluator.cs" />
     <Compile Include="ParserFunctionAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,8 +94,11 @@
     <Compile Include="StringComparisionIsEqualExpression.cs" />
     <Compile Include="StringConstantExpression.cs" />
     <Compile Include="SymbolFactory.cs" />
+    <Compile Include="Handlers\SymbolTokenHandler.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TokenDefinition.cs" />
+    <Compile Include="TokenHandlerData.cs" />
+    <Compile Include="TokenHandlerFactory.cs" />
     <Compile Include="Tokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -96,9 +108,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Handlers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

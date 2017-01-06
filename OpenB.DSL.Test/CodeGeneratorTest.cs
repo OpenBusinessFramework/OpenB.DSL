@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using NUnit.Framework;
+using OpenB.Core;
 
 namespace OpenB.DSL.Test
 {
@@ -15,7 +14,9 @@ namespace OpenB.DSL.Test
         public void EvaluateCustomFunction_ComplexLogicalOperatorInExpression()
         {
             var person = new Person { Age = 23 };
-            var expressionContext = new ParserContext(typeof(Person));
+            var personRepository = new Repository<Person>();
+
+            var expressionContext = new ParserContext(personRepository);
             var parser = ExpressionParser.GetInstance();
 
             string expression = "(12 + 3 = 15) and ((12 + 3 = 15) or (13 + 2 = 10))";
@@ -28,7 +29,9 @@ namespace OpenB.DSL.Test
         public void EvaluateCustomFunction_ComplexObjectEvalutionExpression()
         {
             var person = new Person { Age = 23 };
-            var expressionContext = new ParserContext(typeof(Person));
+            var personRepository = new Repository<Person>();
+
+            var expressionContext = new ParserContext(personRepository);
             var parser = ExpressionParser.GetInstance();
 
             string expression = "[Key] = 'harry' or [Name] = 'john'";
@@ -41,30 +44,58 @@ namespace OpenB.DSL.Test
         public void CreateBusinessRule()
         {           
             Family family = new Family();
+            Repository<Family> familyRepository = new Repository<Family>();
 
             ExpressionParser parser = ExpressionParser.GetInstance();
-            ParserResult result = parser.Parse(new ParserContext(typeof(Family)), "all [Person] in [Family.Members] having [Age] > 18 and [Gender] = 'Male'");
+            ParserResult result = parser.Parse(new ParserContext(familyRepository), "all [Person] in [Family.Members] having [Age] > 18 and [Gender] = 'Male'");
 
             result.CompiledExpression.Evaluate();
         }
 
-        public class ExpressionParsingService
+        internal class Family : IModel
         {
-            Regex baseExpression;
-
-            public ExpressionParsingService()
+            public string Description
             {
-                baseExpression = new Regex(@"(?<quantifier>ALL|ONE)\s+?\[(?<modeltype>\w+?)\]\s+?IN\s+\[(?<model>\w+?\.{0,1}\w+>?)\]\s+?HAVING");
+                get
+                {
+                    throw new NotImplementedException();
+                }
             }
 
-            public void Parse(string expression)
+            public bool IsActive
             {
+                get
+                {
+                    throw new NotImplementedException();
+                }
 
+                set
+                {
+                    throw new NotImplementedException();
+                }
             }
-        }
 
-        internal class Family
-        {
+            public string Key
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public string Name
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public IList<Person> Members { get; private set; }
+            public Family()
+            {
+                Members = new List<Person>();
+            }
         }
 
         public class ProcessDefintion

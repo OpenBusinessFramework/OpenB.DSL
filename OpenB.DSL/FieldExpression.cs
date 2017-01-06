@@ -5,12 +5,12 @@ namespace OpenB.DSL
     internal class FieldExpression : IExpression
     {
         ParserContext parserContext;
-        string fieldName;
+        public string FieldName { get; private set; }
 
         public FieldExpression(ParserContext context, string fieldName)
         {
             parserContext = context;
-            this.fieldName = fieldName;
+            FieldName = fieldName;
         }
 
         public object Evaluate()
@@ -20,7 +20,7 @@ namespace OpenB.DSL
 
         public override string ToString()
         {
-            return fieldName;
+            return FieldName;
         }
 
         public string GenerateCode()

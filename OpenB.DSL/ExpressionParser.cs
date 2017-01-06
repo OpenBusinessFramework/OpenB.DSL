@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace OpenB.DSL
 {
@@ -15,34 +13,36 @@ namespace OpenB.DSL
 
         private IDictionary<string, Queue> quequeCache = new Dictionary<string, Queue>();
 
-        private CoreConfiguration coreConfiguration;
-        private ExpressionFactory expressionFactory;
-        readonly ConstantExpressionFactory constantExpressionFactory;
+        private CoreConfiguration coreConfiguration;      
+        readonly TokenHandlerFactory tokenHandlerFactory;
+        private Stack<IExpression> expressionStack;
 
-        private ExpressionParser(CoreConfiguration configuration, ExpressionFactory expressionFactory, ConstantExpressionFactory constantExpressionFactory)
-        {        
-
-            if (constantExpressionFactory == null)
-                throw new ArgumentNullException(nameof(constantExpressionFactory));
-
-            if (expressionFactory == null)
-                throw new ArgumentNullException(nameof(expressionFactory));
+        private ExpressionParser(CoreConfiguration configuration, TokenHandlerFactory tokenHandlerFactory)
+        {
+            if (tokenHandlerFactory == null)
+                throw new ArgumentNullException(nameof(tokenHandlerFactory));
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            this.expressionFactory = expressionFactory;
+            this.tokenHandlerFactory = tokenHandlerFactory;                       
             this.coreConfiguration = configuration;
-            this.constantExpressionFactory = constantExpressionFactory;
+            this.expressionStack = tokenHandlerFactory.ExpressionStack;  
+                   
         }
 
         public static ExpressionParser GetInstance()
         {
             if (expressionParser == null)
             {
+                var constantExpressionFactory = new ConstantExpressionFactory(CultureInfo.InvariantCulture);
+                var expressionFactory = new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration()));
+
+                var tokenHandlerData = new TokenHandlerData(constantExpressionFactory, expressionFactory);
+          
                 expressionParser = new ExpressionParser(
                     new CoreConfiguration(),
-                    new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration())),
-                    new ConstantExpressionFactory(CultureInfo.InvariantCulture));
+                    new TokenHandlerFactory(tokenHandlerData)
+                    );
             }
             return expressionParser;
         }
@@ -96,7 +96,7 @@ namespace OpenB.DSL
                 }
 
                 if (token.Type.Equals("QUANTIFIER") || token.Type.Equals("SELECTOR") || token.Type.Equals("QUALIFIER"))
-                {                 
+                {
                     operatorStack.Push(token);
                 }
 
@@ -180,142 +180,15 @@ namespace OpenB.DSL
             }
 
             if (outputQueue == null)
-                throw new ArgumentNullException(nameof(outputQueue));
-
-            Stack<IExpression> argumentStack = new Stack<IExpression>();
-
+                throw new ArgumentNullException(nameof(outputQueue));           
 
             while (outputQueue.Count > 0)
             {
                 Token currentToken = (Token)outputQueue.Peek();
-                switch (currentToken.Type)
-                {
-                    case "OPERATOR":
-                        HandleOperator(outputQueue, argumentStack, currentToken);
-                        break;
-
-                    case "EQUALITY_COMPARER":
-                        HandleEqualityComparer(outputQueue, argumentStack, currentToken);
-                        break;
-
-                    case "SYMBOL":
-                        HandleSymbol(outputQueue, argumentStack, currentToken);
-                        break;
-
-                    case "LOGICAL_OPERATOR":
-                        HandleLogicalOperation(outputQueue, argumentStack, currentToken);
-                        break;
-
-                    case "FIELD":
-                        HandleField(context, outputQueue, argumentStack, currentToken);
-                        break;
-
-                    case "QUALIFIER":
-                        HandleQualifier(outputQueue, argumentStack);
-                        break;
-
-                    default:
-                        HandleConstant(outputQueue, argumentStack, currentToken);
-                        break;
-                }
+                var tokenHandler = tokenHandlerFactory.GetHandler(outputQueue, context, currentToken);
+                tokenHandler.Handle(currentToken);
             }
-            return new ParserResult(argumentStack.Pop());
-        }
-
-        private void HandleQualifier(Queue outputQueue, Stack<IExpression> expressionStack)
-        {
-            var whereExpression = expressionStack.Pop();
-            var contextList = expressionStack.Pop();
-            var itemType = expressionStack.Pop();
-
-            outputQueue.Dequeue();
-            outputQueue.Dequeue();
-           
-            var quantifierToken = (Token)outputQueue.Dequeue();
-
-            expressionStack.Push(new ContextSelectionExpression(quantifierToken.Contents, whereExpression, contextList, itemType));
-        }
-
-        private void HandleField(ParserContext context, Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)
-        {           
-
-            Regex fieldExpression = new Regex(@"\[(?<contents>.*)\]");
-            Match match = fieldExpression.Match(currentToken.Contents);
-            if (!match.Success || match.Groups.Count == 0)
-            {
-                throw new NotSupportedException("Cannot parse field");               
-            }           
-
-            expressionStack.Push(new FieldExpression(context, match.Groups["contents"].Value));
-            outputQueue.Dequeue();
-        }
-
-        private void HandleLogicalOperation(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
-        {
-            IExpression rightHand = argumentStack.Pop();
-            IExpression leftHand = argumentStack.Pop();
-            IEQualityExpression expression = expressionFactory.GetLogicalExpression(leftHand, rightHand, currentToken.Contents);
-            argumentStack.Push(expression);
-
-            outputQueue.Dequeue();
-
-
-        }
-
-        private void HandleSymbol(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
-        {
-            Type expressionType = expressionFactory.GetSymbolicExpression(currentToken.Contents);
-            ConstructorInfo constructor = expressionType.GetConstructors().FirstOrDefault();
-
-            List<object> arguments = new List<object>();
-
-            for (int x = 0; x < constructor.GetParameters().Length; x++)
-            {
-                arguments.Add(argumentStack.Pop().Evaluate());
-            }
-
-            IEQualityExpression expression = (IEQualityExpression)Activator.CreateInstance(expressionType, arguments.ToArray());
-
-            argumentStack.Push(expression);
-            outputQueue.Dequeue();
-        }
-
-        private void HandleOperator(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
-        {
-            IExpression rightHand = argumentStack.Pop();
-            IExpression leftHand = argumentStack.Pop();
-            IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
-            argumentStack.Push(expression);
-
-            outputQueue.Dequeue();
-        }
-
-        private void HandleEqualityComparer(Queue outputQueue, Stack<IExpression> expressionStack, Token currentToken)
-        {
-            IExpression rightHand = expressionStack.Pop();
-            IExpression leftHand = expressionStack.Pop();
-            IEQualityExpression expression = expressionFactory.GetExpression(leftHand, rightHand, currentToken.Contents);
-            expressionStack.Push(expression);
-
-            ExpressionCache.GetInstance().Add(expression);
-
-            outputQueue.Dequeue();
-        }
-
-        private void HandleConstant(Queue outputQueue, Stack<IExpression> argumentStack, Token currentToken)
-        {
-            IExpression tokenValue = constantExpressionFactory.Evaluate(currentToken);
-
-            argumentStack.Push(tokenValue);
-
-            outputQueue.Dequeue();
-
-
-        }
-    }
-
-    public interface IParser
-    {
-        ParserResult Parse(ParserContext parserContext, string expression);
+            return new ParserResult(expressionStack.Pop());
+        }       
     }
 }

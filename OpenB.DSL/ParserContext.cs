@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenB.Core;
+using OpenB.Core.ACL;
 
 namespace OpenB.DSL
 {
     public class ParserContext
     {
-        public Type ModelType { get; private set; }
+        public IRepository Repository { get; private set; }
 
        
 
-        public ParserContext(Type modelType)
+        public ParserContext(IRepository repository)
         {
-            this.ModelType = modelType;
+            if (repository == null)
+                throw new ArgumentNullException(nameof(repository));
+
+            this.Repository = repository;
         }
     }
 
@@ -37,13 +41,14 @@ namespace OpenB.DSL
         Female
     }
 
+
+
     public class Repository<T> : IRepository<T> where T : IModel
-    {
+    {       
+
         public IEnumerable<T> Read(IList<IFilter> conditions)
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

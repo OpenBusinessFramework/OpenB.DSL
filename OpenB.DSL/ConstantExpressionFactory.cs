@@ -4,7 +4,7 @@ using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
 {
-    internal class ConstantExpressionFactory
+    public class ConstantExpressionFactory
     {
         readonly CultureInfo cultureInfo;
 
