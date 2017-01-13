@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace OpenB.DSL.Handlers
 {
-
+    [HandlesTokens("OPERATOR")]
     public class OperatorTokenHandler : ITokenHandler
     {
         private Stack<IExpression> expressionStack;
         private Queue outputQueue;
-        readonly ExpressionFactory expressionFactory;
+        readonly OperatorExpressionFactory expressionFactory;
 
-        public OperatorTokenHandler(ExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
+        public OperatorTokenHandler(OperatorExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
         {
             this.expressionFactory = expressionFactory;
             if (expressionStack == null)

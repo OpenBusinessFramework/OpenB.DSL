@@ -5,14 +5,14 @@ using OpenB.DSL;
 
 namespace OpenB.DSL.Handlers
 {
-
+    [HandlesTokens("LOGICAL_OPERATOR")]
     public class LogicalOperatorTokenHandler : ITokenHandler
     {
         readonly Queue outputQueue;      
-        readonly ExpressionFactory expressionFactory;
+        readonly OperatorExpressionFactory expressionFactory;
         private Stack<IExpression> expressionStack;
 
-        public LogicalOperatorTokenHandler(ExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
+        public LogicalOperatorTokenHandler(OperatorExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
         {
             if (expressionFactory == null)
                 throw new ArgumentNullException(nameof(expressionFactory));

@@ -9,7 +9,7 @@ namespace OpenB.DSL
     public class TokenHandlerFactory
     {
         private ConstantExpressionFactory constantExpressionFactory;      
-        private ExpressionFactory expressionFactory;       
+        private OperatorExpressionFactory expressionFactory;       
      
         public TokenHandlerFactory(TokenHandlerData tokenHandlerData)
         {
@@ -25,7 +25,7 @@ namespace OpenB.DSL
 
         public Stack<IExpression> ExpressionStack { get; internal set; }
 
-        public ITokenHandler GetHandler(Queue outputQueue, ParserContext parserContext, Token token)
+        public ITokenHandler GetHandler(Queue outputQueue, ExpressionEvaluationContext parserContext, Token token)
         {
             if (parserContext == null)
                 throw new ArgumentNullException(nameof(parserContext));
@@ -61,7 +61,7 @@ namespace OpenB.DSL
                     return new ConstantTokenHander(constantExpressionFactory, outputQueue, ExpressionStack);
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Token of type {token.Type} is not supported.");
 
             }
         }

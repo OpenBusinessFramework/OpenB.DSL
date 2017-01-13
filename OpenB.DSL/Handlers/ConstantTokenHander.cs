@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using OpenB.DSL;
 
 namespace OpenB.DSL.Handlers
 {
-
+    [HandlesTokens("CONSTANT", "INT", "QUOTED_STRING", "BOOLEAN")]
     public class ConstantTokenHander : ITokenHandler
     {
         readonly Queue outputQueue;

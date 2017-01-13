@@ -9,13 +9,14 @@ using OpenB.DSL.Handlers;
 namespace OpenB.DSL.Handlers
 {
 
-public class SymbolTokenHandler : ITokenHandler
+    [HandlesTokens("SYMBOL")]
+    public class SymbolTokenHandler : ITokenHandler
 {
     readonly Queue outputQueue;
     readonly Stack<IExpression> expressionStack;
-    readonly ExpressionFactory expressionFactory;
+    readonly OperatorExpressionFactory expressionFactory;
 
-    public SymbolTokenHandler(ExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
+    public SymbolTokenHandler(OperatorExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
     {        
         if (expressionFactory == null)
             throw new ArgumentNullException(nameof(expressionFactory));

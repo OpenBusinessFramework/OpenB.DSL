@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenB.Core;
 
-namespace OpenB.DSL.Test
+namespace OpenB.DSL.Test.Assemblies
 {
-    internal class Person : IModel
+    public class Person : IModel
     {
         public int Age { get; set; }
 

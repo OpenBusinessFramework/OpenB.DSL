@@ -26,8 +26,7 @@ namespace OpenB.DSL
 
             this.tokenHandlerFactory = tokenHandlerFactory;                       
             this.coreConfiguration = configuration;
-            this.expressionStack = tokenHandlerFactory.ExpressionStack;  
-                   
+            this.expressionStack = tokenHandlerFactory.ExpressionStack;                     
         }
 
         public static ExpressionParser GetInstance()
@@ -35,7 +34,7 @@ namespace OpenB.DSL
             if (expressionParser == null)
             {
                 var constantExpressionFactory = new ConstantExpressionFactory(CultureInfo.InvariantCulture);
-                var expressionFactory = new ExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration()));
+                var expressionFactory = new OperatorExpressionFactory(new SymbolFactory(), new Reflection.TypeLoaderService(new Reflection.TypeLoaderServiceConfiguration()));
 
                 var tokenHandlerData = new TokenHandlerData(constantExpressionFactory, expressionFactory);
           
@@ -161,7 +160,7 @@ namespace OpenB.DSL
             return outputQueue;
         }
 
-        public ParserResult Parse(ParserContext context, string expression)
+        public ParserResult Parse(ExpressionEvaluationContext context, string expression)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));

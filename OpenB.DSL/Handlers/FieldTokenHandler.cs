@@ -2,17 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL.Handlers
 {
-
+    [HandlesTokens("FIELD")]
     internal class FieldTokenHandler : ITokenHandler
     {
         private Stack<IExpression> expressionStack;
-        private ParserContext context;
+        private ExpressionEvaluationContext context;
         private Queue outputQueue;
 
-        public FieldTokenHandler(ParserContext context, Queue outputQueue, Stack<IExpression> expressionStack)
+        public FieldTokenHandler(ExpressionEvaluationContext context, Queue outputQueue, Stack<IExpression> expressionStack)
         {
             if (expressionStack == null)
                 throw new ArgumentNullException(nameof(expressionStack));
@@ -35,7 +36,8 @@ namespace OpenB.DSL.Handlers
                 throw new NotSupportedException("Cannot parse field");
             }
 
-            expressionStack.Push(new FieldExpression(context, match.Groups["contents"].Value));
+           
+            expressionStack.Push(new FieldExpression(context.ModelEvaluator, match.Groups["contents"].Value));
             outputQueue.Dequeue();
         }
     }

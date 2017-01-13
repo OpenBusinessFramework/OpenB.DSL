@@ -5,14 +5,14 @@ using OpenB.DSL;
 
 namespace OpenB.DSL.Handlers
 {
-
+    [HandlesTokens("EQUALITY_COMPARER")]
     public class EqualityComparerTokenHandler : ITokenHandler
     {
-        readonly ExpressionFactory expressionFactory;
+        readonly OperatorExpressionFactory expressionFactory;
         readonly Queue outputQueue;
         readonly Stack<IExpression> expressionStack;
 
-        public EqualityComparerTokenHandler(ExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
+        public EqualityComparerTokenHandler(OperatorExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
         {
 
             if (expressionFactory == null)

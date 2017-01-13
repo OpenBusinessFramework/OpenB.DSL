@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace OpenB.DSL.Handlers
 {
-
+    [HandlesTokens("QUALIFIER")]
     public class QualifierTokenHandler : ITokenHandler
     {
-        readonly ParserContext context;
+        readonly ExpressionEvaluationContext context;
         readonly Queue outputQueue;
         readonly Stack<IExpression> expressionStack;
 
-        public QualifierTokenHandler(ParserContext context, Queue outputQueue, Stack<IExpression> expressionStack)
+        public QualifierTokenHandler(ExpressionEvaluationContext context, Queue outputQueue, Stack<IExpression> expressionStack)
         {
             if (expressionStack == null)
                 throw new ArgumentNullException(nameof(expressionStack));
@@ -27,6 +27,9 @@ namespace OpenB.DSL.Handlers
 
         public void Handle(Token currentToken)
         {
+            if (currentToken == null)
+                throw new ArgumentNullException(nameof(currentToken));
+
             var whereExpression = expressionStack.Pop();
             var contextList = expressionStack.Pop();
             var itemType = expressionStack.Pop();

@@ -8,9 +8,9 @@ namespace OpenB.DSL
         private IExpression itemType;
         private ContextQuantifier quantifier;
         private IExpression whereExpression;
-        public ParserContext Context { get; private set; } 
+        public ExpressionEvaluationContext Context { get; private set; } 
 
-        public ContextSelectionExpression(ParserContext context, object quantifier, IExpression whereExpression, IExpression contextList, IExpression itemType)
+        public ContextSelectionExpression(ExpressionEvaluationContext context, object quantifier, IExpression whereExpression, IExpression contextList, IExpression itemType)
         {
            
             if (context == null)
@@ -18,14 +18,14 @@ namespace OpenB.DSL
 
             Context = context;
 
+
+            this.quantifier = (ContextQuantifier)Enum.Parse(typeof(ContextQuantifier), quantifier.ToString(), true);
+
+
+            this.itemType = itemType;
+
             GetContextList(contextList, whereExpression);
 
-            this.quantifier = (ContextQuantifier) Enum.Parse(typeof(ContextQuantifier), quantifier.ToString(), true);
-            this.whereExpression = whereExpression;
-
-            
-            //this.contextList = contextList;
-            this.itemType = itemType;
         }
 
         private void GetContextList(IExpression contextListExpression, IExpression whereExpression)
@@ -44,10 +44,11 @@ namespace OpenB.DSL
             }
 
             // TODO: Select right assembly.
-            Type modelType = Type.GetType(contextPath[0]);
-            
 
-           // ModelEvaluator modelEvaluator = new ModelEvaluator()
+
+            Context.ModelEvaluator.Evaluate(itemType.ToString(), contextPath);
+           
+          
             
         }
 

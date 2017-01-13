@@ -48,6 +48,7 @@
     <Compile Include="BaseEqualityExpression.cs" />
     <Compile Include="BooleanConstantExpression.cs" />
     <Compile Include="ConstantExpressionFactory.cs" />
+    <Compile Include="ExpressionEvaluationContext.cs" />
     <Compile Include="Handlers\EqualityComparerTokenHandler.cs" />
     <Compile Include="Handlers\ConstantTokenHander.cs" />
     <Compile Include="ContextSelectionExpression.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Expressions\Math\SubstractionExpression.cs" />
     <Compile Include="FieldExpression.cs" />
     <Compile Include="Handlers\FieldTokenHandler.cs" />
+    <Compile Include="Handlers\HandlesTokensAttribute.cs" />
     <Compile Include="IConstantExpression.cs" />
     <Compile Include="IMatcher.cs" />
     <Compile Include="Functions\IParserFunction.cs" />

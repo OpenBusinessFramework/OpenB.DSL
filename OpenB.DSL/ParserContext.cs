@@ -1,24 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenB.Core;
-using OpenB.Core.ACL;
 
 namespace OpenB.DSL
 {
-    public class ParserContext
-    {
-        public IRepository Repository { get; private set; }
-
-       
-
-        public ParserContext(IRepository repository)
-        {
-            if (repository == null)
-                throw new ArgumentNullException(nameof(repository));
-
-            this.Repository = repository;
-        }
-    }
 
     public interface IRepository<TModel> : IRepository where TModel : IModel
     {
@@ -44,7 +29,7 @@ namespace OpenB.DSL
 
 
     public class Repository<T> : IRepository<T> where T : IModel
-    {       
+    {
 
         public IEnumerable<T> Read(IList<IFilter> conditions)
         {

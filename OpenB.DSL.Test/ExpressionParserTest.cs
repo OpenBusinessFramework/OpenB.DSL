@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using NUnit.Framework;
+using OpenB.DSL.Reflection;
+using OpenB.DSL.Test.Assemblies;
 
 namespace OpenB.DSL.Test
 {
@@ -8,8 +10,9 @@ namespace OpenB.DSL.Test
     public class ExpressionParserTest
     {
         Person person;
-        ParserContext expressionContext;
+        ExpressionEvaluationContext expressionContext;
         ExpressionParser parser;
+        ModelEvaluator modelEvaluator;
 
         [OneTimeSetUp]
         public void SetupFixture()
@@ -17,7 +20,11 @@ namespace OpenB.DSL.Test
             person = new Person { Age = 23 };
             var personRepository = new Repository<Person>();
 
-            expressionContext = new ParserContext(personRepository);
+            var personAssembly = typeof(Person).Assembly;
+            modelEvaluator = new ModelEvaluator(new[] { personAssembly});
+            
+
+            expressionContext = new ExpressionEvaluationContext(modelEvaluator);
             parser = ExpressionParser.GetInstance();
         }
 
@@ -122,8 +129,6 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateComplexCustomFunction_InExpression()
         {
-
-
             string expression = "(12 + 3) / SQRT(15 * 15) = 1";
 
 
@@ -249,7 +254,7 @@ namespace OpenB.DSL.Test
             this.parser = parser;
         }
 
-        public string GenerateExpressionAssignment(ParserContext context, string expression)
+        public string GenerateExpressionAssignment(ExpressionEvaluationContext context, string expression)
         {
             return $"businessRules.Add({parser.Parse(context, expression).CompiledExpression.GenerateCode()});";
         }

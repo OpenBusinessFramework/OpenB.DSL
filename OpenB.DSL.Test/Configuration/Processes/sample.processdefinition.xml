@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ProcessDefinition xmlns="http://www.openb.org/schemas/bpm/process">
+  <Key>SAMPLE_PROCESS</Key>
+  <Name>Sample process</Name>
+  <Description>Sample process description</Description>
+  <StartingState Ref="NEW_FAMILY_ADDED" />
+  <ProcessStateDefinitions>
+    <ProcessStateDefinition>
+      <Key>NEW_FAMILY_ADDED</Key>
+    </ProcessStateDefinition>
+  </ProcessStateDefinitions>
+</ProcessDefinition>

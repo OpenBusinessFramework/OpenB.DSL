@@ -1,21 +1,25 @@
 ﻿using System;
+using OpenB.DSL.Handlers;
+using OpenB.DSL.Reflection;
 
 namespace OpenB.DSL
-{
-    internal class FieldExpression : IExpression
+{   
+    class FieldExpression : IExpression
     {
-        ParserContext parserContext;
+        public ModelEvaluator ModelEvaluator { get; private set; }
         public string FieldName { get; private set; }
 
-        public FieldExpression(ParserContext context, string fieldName)
+        public FieldExpression(ModelEvaluator modelEvalutor, string fieldName)
         {
-            parserContext = context;
+            if (modelEvalutor == null)
+                throw new ArgumentNullException(nameof(modelEvalutor));
+            ModelEvaluator = modelEvalutor;
             FieldName = fieldName;
         }
 
         public object Evaluate()
         {
-            throw new NotImplementedException();
+            return ModelEvaluator.Evaluate(FieldName);
         }
 
         public override string ToString()
