@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenB.DSL
+namespace OpenB.DSL.Expressions
 {
     internal class SymbolExpression : IEQualityExpression
     {
@@ -13,7 +13,5 @@ namespace OpenB.DSL
         {
             throw new NotSupportedException();
         }
-
-
     }
 }

@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using OpenB.DSL.Handlers;
+using OpenB.DSL.Expressions;
 
 namespace OpenB.DSL
 {
-
     public class TokenHandlerFactory
     {
         private ConstantExpressionFactory constantExpressionFactory;      
@@ -15,9 +15,7 @@ namespace OpenB.DSL
         {
             if (tokenHandlerData == null)
                 throw new ArgumentNullException(nameof(tokenHandlerData));
-
            
-            
             ExpressionStack = tokenHandlerData.ExpressionStack;
             constantExpressionFactory = tokenHandlerData.ConstantExpressionFactory;
             expressionFactory = tokenHandlerData.ExpressionFactory;

@@ -21,8 +21,8 @@ namespace OpenB.DSL.Test
             var personRepository = new Repository<Person>();
 
             var personAssembly = typeof(Person).Assembly;
-            modelEvaluator = new ModelEvaluator(new[] { personAssembly});
-            
+            modelEvaluator = new ModelEvaluator(new[] { personAssembly });
+
 
             expressionContext = new ExpressionEvaluationContext(modelEvaluator);
             parser = ExpressionParser.GetInstance();
@@ -31,11 +31,8 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_MoreThan_MathExpression()
         {
-
-
             string expression = "8 * 3 / 2 > (12 / 3) + 2";
-
-            //Queue queue = parser.Parse(expression);
+          
             var parserResult = parser.Parse(expressionContext, expression);
 
             bool result = (bool)parserResult.CompiledExpression.Evaluate();
@@ -46,10 +43,8 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_LessThan_MathExpression()
         {
-
             string expression = "8 * 3 / 2 < (12 / 3) + 2";
-
-            //Queue queue = parser.Parse(expression);
+          
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 
             Assert.That(result.Equals(false));
@@ -58,10 +53,8 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_NotEqual_MathExpression()
         {
-
             string expression = "8 * 3 / 2 != (12 / 3) + 2";
-
-            //Queue queue = parser.Parse(expression);
+          
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 
             Assert.That(result.Equals(true));
@@ -70,11 +63,8 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_Equals_MathExpression()
         {
-
-
             string expression = "4 * 3 / 2 = (12 / 3) + 2";
-
-            //Queue queue = parser.Parse(expression);
+          
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 
             Assert.That(result.Equals(true));
@@ -83,7 +73,6 @@ namespace OpenB.DSL.Test
         [Test]
         public void MathExpression_Equals_ConstantExpression()
         {
-
             string expression = "4 * 3 = 12";
 
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
@@ -94,11 +83,8 @@ namespace OpenB.DSL.Test
         [Test]
         public void MultiMathExpression_Equals_ConstantExpression()
         {
-
-
             string expression = "4 * 3 - 2 = 12 * (6 - 3) - 26";
-
-            //Queue queue = parser.Parse(expression);
+        
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 
             Assert.That(result.Equals(true));
@@ -172,7 +158,6 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_FieldInExpression()
         {
-
             string expression = "100 / SQRT([Age]) = 2";
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 
@@ -182,10 +167,8 @@ namespace OpenB.DSL.Test
         [Test]
         public void EvaluateCustomFunction_FieldInExpressionRunsTwice_IsFaster()
         {
-
             string expression = "100 / SQRT([Age]) = 2";
 
-            //Queue queue = parser.Parse(expression);
             bool firstResult = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
             bool secondResult = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 
@@ -196,9 +179,7 @@ namespace OpenB.DSL.Test
         [Test]
         public void Just_Two_Expressions_BoundByALogicalExpression()
         {
-
             string expression = "[Age] > 16 and [IsMarried] = true";
-
 
             bool result = (bool)parser.Parse(expressionContext, expression).CompiledExpression.Evaluate();
 

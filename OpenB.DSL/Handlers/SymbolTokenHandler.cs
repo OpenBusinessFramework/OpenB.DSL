@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using OpenB.DSL;
 using OpenB.DSL.Handlers;
+using OpenB.DSL.Expressions;
 
 namespace OpenB.DSL.Handlers
 {

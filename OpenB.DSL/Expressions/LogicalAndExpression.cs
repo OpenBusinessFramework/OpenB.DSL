@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenB.DSL
+namespace OpenB.DSL.Expressions
 {
     internal class LogicalAndExpression : IEQualityExpression
     {

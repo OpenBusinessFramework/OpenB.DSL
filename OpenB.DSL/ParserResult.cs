@@ -1,4 +1,6 @@
-﻿namespace OpenB.DSL
+﻿using OpenB.DSL.Expressions;
+
+namespace OpenB.DSL
 {
     public class ParserResult
     {

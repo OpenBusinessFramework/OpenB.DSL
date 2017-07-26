@@ -3,6 +3,7 @@ using System.Linq;
 using OpenB.DSL.Expressions.Math;
 using OpenB.DSL.Functions;
 using OpenB.DSL.Reflection;
+using OpenB.DSL.Expressions;
 
 namespace OpenB.DSL
 {
@@ -23,28 +24,28 @@ namespace OpenB.DSL
             this.symbolFactory = symbolFactory;
         }
 
-        internal IEQualityExpression GetExpression(IExpression left, IExpression right, string contents)
+        internal IEQualityExpression GetExpression(IExpression left, IExpression right, string @operator)
         {
             if (left is StringConstantExpression || right is StringConstantExpression)
             {
-                if (contents == "=")
+                if (@operator == "=")
                 {
                     return new StringComparisionIsEqualExpression(left, right);
                 }
 
-                if (contents == "!=")
+                if (@operator == "!=")
                 {
                     return new StringComparisionNotEqualExpression(left, right);
                 }
 
-                throw new NotSupportedException($"Equality operator {contents} is not supported for arguments {left} and {right}.");
+                throw new NotSupportedException($"Equality operator {@operator} is not supported for arguments {left} and {right}.");
                   
             }
 
             // TODO: Type checking for left and right.
            
 
-            switch (contents)
+            switch (@operator)
             {
                 case "+":
                     return new AdditionExpression(left, right);
@@ -54,7 +55,6 @@ namespace OpenB.DSL
                     return new MultiplyExpression(left, right);
                 case "/":
                     return new DivisionExpression(left, right);
-
                 case "=":
                     return new EqualExpression(left, right);
                 case "<":
@@ -101,7 +101,3 @@ namespace OpenB.DSL
     }
 }
 
-
-public interface IEQualityExpression : OpenB.DSL.IEQualityExpression
-{
-}

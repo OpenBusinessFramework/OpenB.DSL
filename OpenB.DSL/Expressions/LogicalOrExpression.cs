@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenB.DSL
+namespace OpenB.DSL.Expressions
 {
     internal class LogicalOrExpression : IEQualityExpression
     {
@@ -27,5 +27,16 @@ namespace OpenB.DSL
         {
             return $"({leftHandExpression.GenerateCode()}) || ({rightHandExpression.GenerateCode()})";
         }
+    }
+
+    
+
+    public interface ICodeGenerator
+    {
+        // LinQ : .Where((left) || (right))
+        // SQL: where (left) or (right)
+        // XML: [(left) or (right)]
+
+        string GenerateCode();
     }
 }

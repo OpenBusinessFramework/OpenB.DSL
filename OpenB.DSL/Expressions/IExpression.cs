@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OpenB.DSL
+namespace OpenB.DSL.Expressions
 {
     public interface IEQualityExpression : IExpression
     {
@@ -9,7 +9,7 @@ namespace OpenB.DSL
 
     public interface IComplexExpression : IExpression
     {
-        IList<IExpression> Children { get; }
+        IList<IExpression> ChildExpressions { get; }
     }
 
     public interface IExpression

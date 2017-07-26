@@ -10,7 +10,7 @@ namespace OpenB.DSL
         public Md5Hash(string source)
         {
             MD5 md5 = MD5.Create();
-            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(source);
+            byte[] inputBytes = Encoding.ASCII.GetBytes(source);
             byte[] hash = md5.ComputeHash(inputBytes);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < hash.Length; i++)

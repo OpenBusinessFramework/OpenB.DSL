@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using OpenB.DSL.Reflection;
+using OpenB.DSL.Expressions;
 
 namespace OpenB.DSL.Handlers
 {
