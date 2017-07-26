@@ -1,31 +1,25 @@
 ﻿namespace OpenB.DSL.Expressions
 {
 
-    internal class StringComparisionIsEqualExpression : IEQualityExpression
+    internal class StringComparisionIsEqualExpression : EqualityExpressionBase
     {
-        private IExpression left;
-        private IExpression right;
-
-        public StringComparisionIsEqualExpression(IExpression left, IExpression right)
+        public StringComparisionIsEqualExpression(IExpression left, IExpression right) : base(left, right)
         {
-            this.left = left;
-            this.right = right;
-
         }
 
-        public object Evaluate()
+        public override object Evaluate()
         {
-            return left.Evaluate().Equals(right.Evaluate());
+            return Left.Evaluate().Equals(Right.Evaluate());
         }
 
         public override string ToString()
         {
-            return $"{left} = {right}";
+            return $"{Left} = {Right}";
         }
 
-        public string GenerateCode()
+        public override string GenerateCode()
         {
-            return $"({left.GenerateCode()}).Equals({right.GenerateCode()})";
+            return $"({Left.GenerateCode()}).Equals({Right.GenerateCode()})";
         }
 
     }

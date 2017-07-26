@@ -12,44 +12,44 @@ namespace OpenB.DSL.Handlers
 
     [HandlesTokens("SYMBOL")]
     public class SymbolTokenHandler : ITokenHandler
-{
-    readonly Queue outputQueue;
-    readonly Stack<IExpression> expressionStack;
-    readonly OperatorExpressionFactory expressionFactory;
-
-    public SymbolTokenHandler(OperatorExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
-    {        
-        if (expressionFactory == null)
-            throw new ArgumentNullException(nameof(expressionFactory));
-        if (expressionStack == null)
-            throw new ArgumentNullException(nameof(expressionStack));
-        if (outputQueue == null)
-            throw new ArgumentNullException(nameof(outputQueue));
-
-        this.expressionStack = expressionStack;
-        this.outputQueue = outputQueue;
-        this.expressionFactory = expressionFactory;
-    }
-
-    public void Handle(Token currentToken)
     {
-        if (currentToken == null)
-            throw new ArgumentNullException(nameof(currentToken));
+        readonly Queue outputQueue;
+        readonly Stack<IExpression> expressionStack;
+        readonly OperatorExpressionFactory expressionFactory;
 
-        Type expressionType = expressionFactory.GetSymbolicExpression(currentToken.Contents);
-        ConstructorInfo constructor = expressionType.GetConstructors().FirstOrDefault();
-
-        List<object> arguments = new List<object>();
-
-        for (int x = 0; x < constructor.GetParameters().Length; x++)
+        public SymbolTokenHandler(OperatorExpressionFactory expressionFactory, Queue outputQueue, Stack<IExpression> expressionStack)
         {
-            arguments.Add(expressionStack.Pop().Evaluate());
+            if (expressionFactory == null)
+                throw new ArgumentNullException(nameof(expressionFactory));
+            if (expressionStack == null)
+                throw new ArgumentNullException(nameof(expressionStack));
+            if (outputQueue == null)
+                throw new ArgumentNullException(nameof(outputQueue));
+
+            this.expressionStack = expressionStack;
+            this.outputQueue = outputQueue;
+            this.expressionFactory = expressionFactory;
         }
 
-        IEQualityExpression expression = (IEQualityExpression)Activator.CreateInstance(expressionType, arguments.ToArray());
+        public void Handle(Token currentToken)
+        {
+            if (currentToken == null)
+                throw new ArgumentNullException(nameof(currentToken));
 
-        expressionStack.Push(expression);
-        outputQueue.Dequeue();
+            Type expressionType = expressionFactory.GetSymbolicExpression(currentToken.Contents);
+            ConstructorInfo constructor = expressionType.GetConstructors().FirstOrDefault();
+
+            List<object> arguments = new List<object>();
+
+            for (int x = 0; x < constructor.GetParameters().Length; x++)
+            {
+                arguments.Add(expressionStack.Pop().Evaluate());
+            }
+
+            IExpression expression = (IExpression)Activator.CreateInstance(expressionType, arguments.ToArray());
+
+            expressionStack.Push(expression);
+            outputQueue.Dequeue();
+        }
     }
-}
 }

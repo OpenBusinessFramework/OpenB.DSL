@@ -4,7 +4,8 @@ namespace OpenB.DSL.Expressions
 {
     public interface IEQualityExpression : IExpression
     {
-        
+        IExpression Left { get; }
+        IExpression Right { get; }
     }
 
     public interface IComplexExpression : IExpression

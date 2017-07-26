@@ -1,31 +1,27 @@
-﻿using System;
+﻿using OpenB.DSL.Expressions.Math;
+using System;
 
 namespace OpenB.DSL.Expressions
 {
-    internal class MoreThanExpression : IEQualityExpression
-    {
-        private IExpression leftHand;
-        private IExpression rightHand;
-
-        public MoreThanExpression(IExpression leftHand, IExpression rightHand)
+    internal class MoreThanExpression : EqualityExpressionBase
+    {        public MoreThanExpression(IExpression leftHand, IExpression rightHand) : base(leftHand, rightHand)
         {
-            this.leftHand = leftHand;
-            this.rightHand = rightHand;
+           
         }
 
-        public object Evaluate()
+        public override object Evaluate()
         {
-            return (double)leftHand.Evaluate() > (double)rightHand.Evaluate();
+            return (double)Left.Evaluate() > (double)Right.Evaluate();
         }
 
         public override string ToString()
         {
-            return string.Concat(leftHand.ToString(), " > ", rightHand.ToString());
+            return string.Concat(Left.ToString(), " > ", Right.ToString());
         }
 
-        public string GenerateCode()
+        public override string GenerateCode()
         {
-            return $"({leftHand.GenerateCode()}) > ({rightHand.GenerateCode()})";
+            return $"({Left.GenerateCode()}) > ({Right.GenerateCode()})";
         }
     }
 }

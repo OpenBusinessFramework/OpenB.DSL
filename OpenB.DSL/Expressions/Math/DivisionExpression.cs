@@ -2,30 +2,28 @@
 
 namespace OpenB.DSL.Expressions.Math
 {
-    internal class DivisionExpression : IEQualityExpression
+    internal class DivisionExpression : EqualityExpressionBase
     {
-        private IExpression leftHand;
-        private IExpression rightHand;
+       
 
-        public DivisionExpression(IExpression leftHand, IExpression rightHand)
+        public DivisionExpression(IExpression leftHand, IExpression rightHand) : base(leftHand, rightHand)
         {
-            this.leftHand = leftHand;
-            this.rightHand = rightHand;            
+            
         }
 
-        public object Evaluate()
+        public override object Evaluate()
         {
-            return (double)leftHand.Evaluate() / (double)rightHand.Evaluate();
+            return (double)Left.Evaluate() / (double)Right.Evaluate();
         }
 
-        public string GenerateCode()
+        public override string GenerateCode()
         {
-            return $"({leftHand.GenerateCode()} / ({rightHand.GenerateCode()})";
+            return $"({Left.GenerateCode()} / ({Right.GenerateCode()})";
         }
 
         public override string ToString()
         {
-            return $"{leftHand} / {rightHand}";
+            return $"{Left} / {Right}";
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace OpenB.DSL.Functions
 {
 
-    public interface IParserFunction : IEQualityExpression
+    public interface IParserFunction : IExpression
     {
 
     }

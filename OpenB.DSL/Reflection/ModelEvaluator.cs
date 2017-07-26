@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace OpenB.DSL.Reflection
         public ModelEvaluator(Assembly[] referencedAssemblies)
         {
             if (referencedAssemblies == null)
-                throw new System.ArgumentNullException(nameof(referencedAssemblies));
+                throw new ArgumentNullException(nameof(referencedAssemblies));
 
             this.referencedAssemblies = referencedAssemblies;
         }

@@ -4,29 +4,29 @@ namespace OpenB.DSL.Expressions
 {
     internal class StringComparisionNotEqualExpression : IEQualityExpression
     {
-        private IExpression left;
-        private IExpression right;
+        public IExpression Left { get; }
+        public IExpression Right { get; }
 
         public StringComparisionNotEqualExpression(IExpression left, IExpression right)
         {
-            this.left = left;
-            this.right = right;
+            this.Left = left;
+            this.Right = right;
          
         }
 
         public object Evaluate()
         {
-            return !left.Evaluate().Equals(right.Evaluate());
+            return !Left.Evaluate().Equals(Right.Evaluate());
         }
 
         public string GenerateCode()
         {
-            return $"!({left.GenerateCode()}).Equals({right.GenerateCode()})";
+            return $"!({Left.GenerateCode()}).Equals({Right.GenerateCode()})";
         }
 
         public override string ToString()
         {
-            return $"{left} != {right}";
+            return $"{Left} != {Right}";
         }
     }
 }

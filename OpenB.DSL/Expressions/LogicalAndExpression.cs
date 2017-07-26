@@ -2,30 +2,27 @@
 
 namespace OpenB.DSL.Expressions
 {
-    internal class LogicalAndExpression : IEQualityExpression
+    internal class LogicalAndExpression : EqualityExpressionBase
     {
-        private IExpression leftHandExpression;
-        private IExpression rightHandExpression;
 
-        public LogicalAndExpression(IExpression leftHandExpression, IExpression rightHandExpression)
+        public LogicalAndExpression(IExpression leftHandExpression, IExpression rightHandExpression) : base(leftHandExpression, rightHandExpression)
         {
-            this.leftHandExpression = leftHandExpression;
-            this.rightHandExpression = rightHandExpression;
+
         }
 
-        public object Evaluate()
+        public override object Evaluate()
         {
-            return (bool)leftHandExpression.Evaluate() && (bool)rightHandExpression.Evaluate();
+            return (bool)Left.Evaluate() && (bool)Right.Evaluate();
         }
 
         public override string ToString()
         {
-            return $"{leftHandExpression} and ${rightHandExpression}";
+            return $"{Left} and {Right}";
         }
 
-        public string GenerateCode()
+        public override string GenerateCode()
         {
-            return $"({leftHandExpression.GenerateCode()}) && ({rightHandExpression.GenerateCode()})";
+            return $"({Left.GenerateCode()}) && ({Right.GenerateCode()})";
         }
     }
 }

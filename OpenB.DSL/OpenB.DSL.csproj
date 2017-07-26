@@ -49,6 +49,7 @@
     <Compile Include="Expressions\BooleanConstantExpression.cs" />
     <Compile Include="ConstantExpressionFactory.cs" />
     <Compile Include="ExpressionEvaluationContext.cs" />
+    <Compile Include="Expressions\EqualityExpressionBase.cs" />
     <Compile Include="Handlers\EqualityComparerTokenHandler.cs" />
     <Compile Include="Handlers\ConstantTokenHander.cs" />
     <Compile Include="Expressions\ContextSelectionExpression.cs" />

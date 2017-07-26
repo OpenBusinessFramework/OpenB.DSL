@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OpenB.DSL.Expressions
 {
-    public abstract class BaseEqualityExpression
+    public abstract class BaseEqualityExpression 
     {
         protected static bool nearlyEqual(double a, double b, double epsilon)
         {

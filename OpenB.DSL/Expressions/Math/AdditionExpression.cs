@@ -5,28 +5,28 @@ namespace OpenB.DSL.Expressions.Math
 
     internal class AdditionExpression : IEQualityExpression
     {
-        private IExpression leftHand;
-        private IExpression rightHand;
+        public IExpression Left { get; }
+        public IExpression Right { get; }
 
         public AdditionExpression(IExpression leftHand, IExpression rightHand)
         {
-            this.leftHand = leftHand;
-            this.rightHand = rightHand;
+            this.Left = leftHand;
+            this.Right = rightHand;
         }
 
         public object Evaluate()
         {
-            return (double)leftHand.Evaluate() + (double)rightHand.Evaluate();
+            return (double)Left.Evaluate() + (double)Right.Evaluate();
         }
 
         public string GenerateCode()
         {
-            return $"({leftHand.GenerateCode()}) + ({rightHand.GenerateCode()})";
+            return $"({Left.GenerateCode()}) + ({Right.GenerateCode()})";
         }
 
         public override string ToString()
         {
-            return $"{leftHand} + {rightHand}";
+            return $"{Left} + {Right}";
         }
     }
 }

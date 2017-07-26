@@ -4,32 +4,31 @@ namespace OpenB.DSL.Expressions
 {
     internal class EqualExpression : BaseEqualityExpression, IEQualityExpression
     {
-        private IExpression left;
-        private IExpression right;
+        public IExpression Left { get; }
+        public IExpression Right { get; }
 
-        public EqualExpression(IExpression leftSide, IExpression ightSide)
+        public EqualExpression(IExpression leftSide, IExpression rightSide)
         {
-            this.left = leftSide;
-            this.right = ightSide;
+            this.Left = leftSide;
+            this.Right = rightSide;
         }
 
         public object Evaluate()
         {
-            double leftValue = Convert.ToDouble(left.Evaluate());
-            double rightValue = Convert.ToDouble(right.Evaluate());
-
+            double leftValue = Convert.ToDouble(Left.Evaluate());
+            double rightValue = Convert.ToDouble(Right.Evaluate());
 
             return nearlyEqual(leftValue, rightValue, 0.00000000001d);
         }
 
         public string GenerateCode()
         {
-            return $"({left.GenerateCode()}) == ({right.GenerateCode()})";
+            return $"({Left.GenerateCode()}) == ({Right.GenerateCode()})";
         }
 
         public override string ToString()
         {
-            return string.Concat(left.ToString(), " = ", right.ToString());
+            return string.Concat(Left.ToString(), " = ", Right.ToString());
         }
 
     }

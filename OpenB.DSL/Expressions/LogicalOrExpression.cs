@@ -4,28 +4,28 @@ namespace OpenB.DSL.Expressions
 {
     internal class LogicalOrExpression : IEQualityExpression
     {
-        private IExpression leftHandExpression;
-        private IExpression rightHandExpression;
+        public IExpression Left { get; }
+        public IExpression Right { get; }
 
         public LogicalOrExpression(IExpression leftHandExpression, IExpression rightHandExpression)
         {
-            this.leftHandExpression = leftHandExpression;
-            this.rightHandExpression = rightHandExpression;
+            this.Left = leftHandExpression;
+            this.Right = rightHandExpression;
         }
 
         public object Evaluate()
         {
-            return (bool)leftHandExpression.Evaluate() || (bool)rightHandExpression.Evaluate();
+            return (bool)Left.Evaluate() || (bool)Right.Evaluate();
         }
 
         public override string ToString()
         {
-            return $"{leftHandExpression} or {rightHandExpression}";
+            return $"{Left} or {Right}";
         }
 
         public string GenerateCode()
         {
-            return $"({leftHandExpression.GenerateCode()}) || ({rightHandExpression.GenerateCode()})";
+            return $"({Left.GenerateCode()}) || ({Right.GenerateCode()})";
         }
     }
 
